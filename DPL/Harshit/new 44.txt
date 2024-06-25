@@ -1,3 +1,97 @@
-select a.winame,a.AgreementID,a.AccountNumber,convert(varchar,parse(a.ProspectCreationDate as date using 'AR-LB'),6) as ProspectCreationDate,a.LoanAmount,'0' as C1,'E' as C2,a.InterestRate,a.RequestedLoanTenor,'E' as C3,a.LoanAmount,a.InterestRate,'R' as C4,convert(varchar,parse(b.First_Installment_Date as date using 'AR-LB'),6) as First_Installment_Date,'1' as C5,'1' as C6,'Other' as C7,'0' as C8,'8' as C9,'PLRP' as C10,'5' as C11,'LS' as C12,a.LoanAmount,'Y' as C13,'0' as C14,'0' as C15,'0' as C16,'0' as C17,'R' as C18,convert(varchar,parse(b.First_Installment_Date as date using 'AR-LB'),6) as First_Installment_Date,'M' as C19,a.InterestRate,'100' as C20,'100' as C21,'1' as C21,'NEW' as C22,'0' as C23,a.RequestedLoanTenor,'M' as C24,'340' as C25,'Personal' as C26,'0' as C27,'0' as C28,'0' as C29,'0' as C30,'2' as C31,'RU' as C32,EMI,'R' as C33,'0' as C34,'365' as C35,'6' as C36,'H' as C37,'PERSONAL PER EXPAT' as C38,'S' as C39,a.LoanAmount,'0' as C40,'0' as C41,'0' as C42,'0' as C43,'0' as C44,a.Moratorium,a.ProspectID,a.RequestedLoanTenor,a.CustomerName,a.Age,a.FirstName,a.MiddleName,a.LastName,convert(varchar,parse(a.StartOfJob as date using 'AR-LB'),6) as DOB,a.Gender,a.FinalTAI,a.JobTitle,a.CIF,a.AccountNumber,a.EmiratesID,a.PassportNumber,a.FinalTAI,convert(varchar,parse(a.DOB as date using 'AR-LB'),6) as StartOfJob,a.AccountNumber,substring(a.winame,11,10) as NewgenAppID from NG_DPL_EXTTABLE a join NG_DPL_IncomeExpense b on a.winame=b.wi_name where a.winame like '%1126%'
+SELECT 
+    a.winame,
+    a.AgreementID,
+    a.AccountNumber,
+    CONVERT(varchar, PARSE(a.ProspectCreationDate AS date USING 'AR-LB'), 6) AS ProspectCreationDate,
+    a.LoanAmount,
+    '0' AS C1,
+    'E' AS C2,
+    a.InterestRate,
+    a.RequestedLoanTenor,
+    'E' AS C3,
+    a.LoanAmount,
+    a.InterestRate,
+    'R' AS C4,
+    CONVERT(varchar, PARSE(b.First_Installment_Date AS date USING 'AR-LB'), 6) AS First_Installment_Date,
+    '1' AS C5,
+    '1' AS C6,
+    'Other' AS C7,
+    '0' AS C8,
+    '8' AS C9,
+    'PLRP' AS C10,
+    '5' AS C11,
+    'LS' AS C12,
+    a.LoanAmount,
+    'Y' AS C13,
+    '0' AS C14,
+    '0' AS C15,
+    '0' AS C16,
+    '0' AS C17,
+    'R' AS C18,
+    CONVERT(varchar, PARSE(b.First_Installment_Date AS date USING 'AR-LB'), 6) AS First_Installment_Date,
+    'M' AS C19,
+    a.InterestRate,
+    '100' AS C20,
+    '100' AS C21,
+    '1' AS C21,
+    'NEW' AS C22,
+    '0' AS C23,
+    a.RequestedLoanTenor,
+    'M' AS C24,
+    '340' AS C25,
+    'Personal' AS C26,
+    '0' AS C27,
+    '0' AS C28,
+    '0' AS C29,
+    '0' AS C30,
+    '2' AS C31,
+    'RU' AS C32,
+    EMI,
+    'R' AS C33,
+    '0' AS C34,
+    '365' AS C35,
+    '6' AS C36,
+    'H' AS C37,
+    CASE 
+        WHEN a.ProductType = 'C' and a.Nationality='AE' THEN 'P_NAT_NEW_TKOVER_AED365'
+        WHEN a.ProductType = 'C' THEN 'P_XPAT_NEW_TKOVR_AED365'
+        WHEN a.ProductType = 'I' and a.Nationality='AE' THEN 'AMAL_P_NAT_NEW_TKOVER'
+		WHEN a.ProductType = 'I' THEN 'AMAL_P_NAT_NEW_TKOVER'
+    END AS C38,
+    'S' AS C39,
+    a.LoanAmount,
+    '0' AS C40,
+    '0' AS C41,
+    '0' AS C42,
+    '0' AS C43,
+    '0' AS C44,
+    a.Moratorium,
+    a.ProspectID,
+    a.RequestedLoanTenor,
+    a.CustomerName,
+    a.Age,
+    a.FirstName,
+    a.MiddleName,
+    a.LastName,
+    CONVERT(varchar, PARSE(a.StartOfJob AS date USING 'AR-LB'), 6) AS DOB,
+    a.Gender,
+    a.FinalTAI,
+    a.JobTitle,
+    a.CIF,
+    a.AccountNumber,
+    a.EmiratesID,
+    a.PassportNumber,
+    a.FinalTAI,
+    CONVERT(varchar, PARSE(a.DOB AS date USING 'AR-LB'), 6) AS StartOfJob,
+    a.AccountNumber,
+    SUBSTRING(a.winame, 11, 10) AS NewgenAppID
+FROM 
+    NG_DPL_EXTTABLE a
+JOIN 
+    NG_DPL_IncomeExpense b 
+    ON a.winame = b.wi_name
+WHERE 
+    a.winame LIKE '%1126%';
+
 
 WI_NAME,APP_ID_C,LOAN_ACCOUNT_NO,APP_SIGNED_DATE,REQ_AMOUNT_FIN,REQ_MARGINMONEY,REQ_INTTYPE,REQ_INTRATE,REQ_TERM,APP_REQ_PMNTTYPE,APPR_AMTFIN,APP_APPR_IRR,APP_PMNTMODE,FIRSTPAYDATE,DUEDAY,APP_PREPAYPENALTY,APP_FINAL_SOURCETYPE,APP_GRACEPERIOD,BRANCHID,PLRTYPE,PLRRATE,DISBURSALTO,DISBURSEDAMOUNT,FLOATINGFLG,FLOATING_FREQUENCY,INTTAXRATE,TDSRATE,LTV_MULTIPLIER,RC_FLAG,INTSTART_DATE_REGULAR,COMPOUND_FREQ,ACTUALIRR,GROSS_LTV,NET_LTV,SOURCE_STATE,CHANNEL_PARTNER,ADVANCEINSTL ,APP_NUMINSTL ,APP_REQ_FREQ ,LOAN_PURPOSE ,LOAN_PURPOSE_DESC,BENEFIT_AMOUNT ,VAT_PRIN_RATE ,VAT_INT_RATE ,VAT_INSTL_RATE,INSTLAMT_ROUNDTILL,INSTLAMT_ROUNDOFF_PARA,EMI,RATE_EMI_FLAG,DECIMALS,DPERYR,FORECLOSELOCKLN ,AGREEMENTTYPE ,SCHEMEID,DEANNUALIZE ,ASSETCOST ,TOPUP_AMT ,NEW_TENURE ,BALLON_AMOUNT,FIFTY_FIFTY_FLAG,LOAN_AMOUNT_PHASE1,MORATORIUM_DAYS,LAF_NUMBER,FIXED_TENURE,CUSTOMERNAME,AGE ,FNAME,MNAME,LNAME,DOB,SEX,GROSS_INCOME,TITLE,CIF_NO,CUSTACNUM,NATIONALID,PASSPORTNO,MONTHLY_INCOME,JOINING_DATE,FINWARE_ACNO,NEW_GEN_APPID
