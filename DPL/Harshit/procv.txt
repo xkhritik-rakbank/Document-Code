@@ -1,0 +1,76 @@
+SELECT winame,         'LEA' AS ModuleID,         'A' AS TXNTYPE,         'LS' AS BPTYPE,         '0' AS DEFCHARGERATE,         '0' AS DEFCHARGEAMT,         CASE             WHEN NewRowNum = 1 THEN '0'             WHEN NewRowNum = 2 THEN '0'             WHEN NewRowNum = 3 THEN ''         END AS ChargeRate,         CASE             WHEN NewRowNum = 1 THEN LoanAmount             WHEN NewRowNum = 2 THEN InterestRate             WHEN NewRowNum = 3 THEN ProcessingFee         END AS ChargeAmt,         'N' AS AdviceGenFlag,         'N' AS ADVICE,         'A' AS Status,         CASE             WHEN NewRowNum = 1 THEN 'P'             WHEN NewRowNum = 2 THEN 'R'             WHEN NewRowNum = 3 THEN 'R'         END AS RCPTPMNTFLG,         CASE             WHEN NewRowNum = 1 THEN '2'             WHEN NewRowNum = 2 THEN '19'             WHEN NewRowNum = 3 THEN '35'         END AS CHARGECODEID,         CASE             WHEN NewRowNum = 1 THEN 'Loan Disbursed'             WHEN NewRowNum = 2 THEN 'Finance Charges'             WHEN NewRowNum = 3 THEN 'Loan Processing Fee'         END AS CHARGEDESC,         'AED' AS CurrencyID,         '24' AS PRODUCTID,         '8' AS BRANCHID,         SUBSTRING(winame, 11, 10) AS NewgenAppID,         CONVERT(NVARCHAR, GETDATE(), 6) AS CurrentDate  FROM (      SELECT           winame,           LoanAmount,    InterestRate,    ProcessingFee,          ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS NewRowNum      FROM           (SELECT           winame,           LoanAmount,    InterestRate,    ProcessingFee from NG_DPL_EXTTABLE where WINAME ='#WINAME#'    UNION ALL    SELECT           winame,           LoanAmount,    InterestRate,    ProcessingFee from NG_DPL_EXTTABLE where WINAME ='#WINAME#'    UNION ALL    SELECT           winame,           LoanAmount,    InterestRate,    ProcessingFee from NG_DPL_EXTTABLE where WINAME ='#WINAME#') as Filtered   ) AS NumberedRecords  
+
+
+
+
+
+USE [rakcas]
+GO
+/****** Object:  StoredProcedure [dbo].[NG_DPL_Exception]    Script Date: 7/8/2024 3:56:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER procedure [dbo].[NG_DPL_Exception]
+@sProcessinstanceid varchar(63),
+@sActivityName nvarchar(50)
+
+As 
+BEGIN
+
+	SET NOCOUNT ON
+
+	DECLARE
+	@SQL nvarchar(4000),
+	@LoopCounter INT,
+	@counter  NVARCHAR(50),
+	@CurrWSName NVARCHAR(255),
+	@return NVARCHAR(50),
+	@Processinstanceid NVARCHAR(255),
+	@ActivityName NVARCHAR(255),
+	@LoopCounterForParentWI INT
+
+	INSERT INTO ng_audit(col1,col2,col3)  values ('ng_DPL_ChildStatus Line 20',@sProcessinstanceid, @sActivityName)
+	print('@sActivityName ' + @sActivityName)
+	print('@sProcessinstanceid ' + @sProcessinstanceid)	
+	
+	INSERT INTO ng_audit(col1,col2,col3)  values ('ng_DPL_ChildStatus @sActivityName',@sProcessinstanceid, @sActivityName)
+	
+	
+	IF (@sActivityName = 'Error_Handling')
+	BEGIN
+		INSERT INTO ng_audit(col1,col2,col3)  values(' Inside If Condition',@sProcessinstanceid,' line 37');
+		
+		SELECT @LoopCounter =ISNULL(Notify_Counter,0) FROM  NG_DPL_EXTTABLE WITH(nolock) where  winame=@sProcessinstanceid ;
+		
+		INSERT INTO ng_audit(col1,col2,col3) values('
+		after select statement for LoopCounter',@sProcessinstanceid,concat('Loop`Counter ',@LoopCounter));
+
+		IF(@LoopCounter < 6)
+		BEGIN
+			INSERT INTO ng_audit(col1,col2,col3)  values('ng_DPL_exception',@sProcessinstanceid,'Inside Counter for NOTIFY');
+			
+			Insert into NG_DPL_GR_DECISION_HISTORY(WI_NAME,Decision,Decision_Date_Time,Workstep,UserName,Remarks) values (@sProcessinstanceid,'Try Again',getdate(),'Error Handling','System','Retry for Notify');
+			
+			update NG_DPL_EXTTABLE set Decision = 'Try Again' where WINAME=@sProcessinstanceid ;
+			
+			set @SQL=concat(concat(concat(concat('UPDATE WFINSTRUMENTTABLE SET ValidTill = DATEADD(second,10, getdate()) where ProcessInstanceID=',','),@sProcessinstanceid),','),' AND workitemId = 1;')
+			print('SQL UPDATE:'+@SQL)
+			INSERT INTO ng_audit(col1,col2,col3)  values('Inside update statement exception',@sProcessinstanceid,@SQL);
+			EXEC sp_executesql @SQL
+			
+			INSERT INTO ng_audit(col1,col2,col3)  values('Inside update statement exception',@sProcessinstanceid,'Valid till set ');
+			
+			print('Inside update statement Notify_DEH');
+			
+			SET @return ='ParentMovedToNotify'
+		END
+	END
+	
+	
+	select @return as ChildStatus
+END
+
+
+exec NG_DPL_Exception 'DigitalPL-0000000838-process', 'Error_Handling'
