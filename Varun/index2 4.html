@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Modal with Text Area - jQuery Syntax</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Button to open the modal -->
+    <button type="button" class="btn btn-primary" id="openModalBtn">Open Modal</button>
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Left-aligned content -->
+            <table>
+                <tr>
+                    <td style="text-align: left;">
+                        <!-- English content goes here -->
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <!-- Right-aligned content (for Arabic) -->
+            <table>
+                <tr>
+                    <td style="text-align: right;">
+                        <!-- Arabic content goes here -->
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+    <script>
+        $(document).ready(function () {
+            // Creating modal HTML as a string
+
+            var modalHTML =
+                '<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">' +
+                '<div class="modal-dialog modal-xl" role="document">' +
+                '<div class="modal-content">' +
+                '<div class="modal-header">' +
+                '<h4 class="modal-title" id="exampleModalLabel">Mail Preview</h4>' +
+                '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                '<span aria-hidden="true">&times;</span>' +
+                '</button>' +
+                '</div>' +
+
+                // modal body starts
+                '<div class="modal-body">' +
+                '<div class="form-floating" id="mainCont">' +
+                '<div class="row">' +
+
+
+                // left part
+                '<div class="col-md-6">' +
+                '<table>' +
+                '<tr>' +
+                '<td style="text-align: left;">';
+
+
+            modalHTML += customStyledCard(7, '<b><b>Dear valued customer,</b></b><br>Thank you for reaching out to us with your concern, registered under the following reference number:');
+
+            modalHTML += customStyledInputGroupLeft('rfNoLeft', 'Reference Number');
+
+            modalHTML += customStyledTextArea('Your complaint is now in process of being reviewed by our team and we will update you within 2 working days. Our working hours are from 8 AM and 5 PM from Monday to Thursday and 8AM to 12:30 PM on Friday. Our motto has always been \'Customer First\'; hence, we-would like to assure you that we are working relentlessly to ensure that your complaint is resolved in a timely manner and that we always provide you with a clear and honest update at all times. We have dedicated one of our team members, details below, to assist you with your issue at hand. You can reach them during our working hours mentioned above.');
+
+            modalHTML += customStyledInputGroupLeft('nameLeft', 'Name');
+            modalHTML += customStyledInputGroupLeft('contactLeft', 'Contact Details');
+            modalHTML += customStyledInputGroupLeft('emailLeft', 'Email Address');
+
+            modalHTML += customStyledCard(9, 'Furthermore, we encourage you to go through our Customer Charter <a href="https://rakbank.ae/charter">https://rakbank.ae/charter</a>, to better understand your rights and our Term & Conditions clauses. Assuring you of our best services at all times.');
+
+            modalHTML += customStyledCard(6, 'Your Banking Partner, <br> <div style="color:red;"> <b><b>Rakbank</b></b></div>');
+
+
+            modalHTML +=
+                '</td>' +
+                '</tr>' +
+                '</table>' +
+                '</div>' +
+
+
+                // right part
+                '<div class="col-md-6">' +
+                '<table>' +
+                '<tr>' +
+                '<td style="text-align: right;">';
+
+            modalHTML += customStyledCard(7, '<b> عميلنا العزيز</b>،<br>نشكرك على تواصلك معنا بخصوص استفسارك، المسجل تحت الرقم المرجعي التالي: ');
+
+            modalHTML += customStyledInputGroupRight('rfNoRight', 'رقم المرجع');
+
+            modalHTML += customStyledTextArea('شكواك قيد المراجعة الآن من قبل فريقنا وسنقوم بإعلامك خلال يومي عمل. ساعات العمل لدينا هي من 8 صباحًا و 5 مساءً من الاثنين إلى الخميس ومن 8 صباحًا إلى 12:30 ظهرًا يوم الجمعة. لقد كان شعارنا دائمًا <b>\'العميل أولاً\'</b>; ومن ثم، نود أن نؤكد لك أننا نعمل بلا كلل لضمان حل شكواك في الوقت المناسب وأننا نقدم لك دائمًا تحديثًا واضحًا وصادقًا في جميع الأوقات. لقد خصصنا أحد أعضاء فريقنا');
+
+            modalHTML += customStyledInputGroupRight('nameRight', 'اسم');
+            modalHTML += customStyledInputGroupRight('contactRight', 'بيانات المتصل');
+            modalHTML += customStyledInputGroupRight('emailLeft', 'عنوان البريد الإلكتروني');
+
+            modalHTML += customStyledCard(9, 'علاوة على ذلك، نحن نشجعك على مراجعة ميثاق العملاء <a href="https://rakbank.ae/charter">https://rakbank.ae/charter</a>، لفهم حقوقك وشروطنا بشكل أفضل.');
+
+            modalHTML += customStyledCard(6, 'شريكك المصرفي، <br> <div style="color:red;"> <b><b>بنك رأس الخيمة</b></b></div>');
+
+
+            modalHTML +=
+                '</td>' +
+                '</tr>' +
+                '</table>' +
+                '</div>' +
+                '</div>' +
+
+                '</div>' +
+                '</div>' +
+                '<div class="modal-footer">' +
+                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                '<button id="saveBtnEmail" type="button" class="btn btn-primary" onClick="handleSave">Save</button>' +
+                '<button id="submitBtnEmail" type="button" class="btn btn-danger">Send</button>' +
+                '<div id="spinner" class="spinner-border m-5 text-danger" role="status" style="display: none;">' +
+                '<span class="visually-hidden"></span>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+
+
+            $('body').append(modalHTML);
+
+            $('#openModalBtn').click(function () {
+
+                $('#exampleModal').modal('show');
+            });
+
+
+            $('#submitBtnEmail').click(function () {
+                showSpinnerAndHideButton();
+
+                var inputs = document.querySelectorAll('.form-control')
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].setAttribute('disabled','');
+                }
+            });
+
+
+            // input values population
+            var inputFields = document.querySelectorAll('.inputField');
+            var outputFields = document.querySelectorAll('.outputField');
+
+            for (var i = 0; i < inputFields.length; i++) {
+                inputFields[i].addEventListener('input', createInputHandler(i));
+            }
+
+            function createInputHandler(index) {
+                return function () {
+                    outputFields[index].value = inputFields[index].value;
+                };
+            }
+
+            function showSpinnerAndHideButton() {
+
+                $('#submitBtnEmail').hide(); // hide submit btn
+
+                $('#spinner').show(); // show spinner
+
+                setTimeout(function () {
+                    $('#exampleModal').modal('hide'); // close modal
+                    $('#spinner').hide(); // hide spinner
+
+                }, 2000);
+            }
+
+            function handleSave(){
+
+                // extract data
+
+                // call to DB to save the data
+
+            }
+
+        });
+
+        function customStyledCard(height, str) {
+            var html =
+                '<div class="card" style="height:' + height + 'rem">' +
+                '<div class="card-body">' +
+                str +
+                '</div>' +
+                '</div>';
+
+            return html;
+        }
+
+        function customStyledInputGroupLeft(id, labelName) {
+            var html =
+                '<div class="input-group my-1">' +
+                '<span class="input-group-text" id="basic-addon1">' + labelName + '</span>' +
+                '<input type="text" class="form-control inputField"';
+            
+            html += (id=='rfNoLeft')?' disabled ':'';
+            
+            html += 
+                'placeholder="" aria-label="Username" aria-describedby="basic-addon1 id="' + id + '">' +
+                '</div>';
+
+            return html;
+        }
+
+        function customStyledInputGroupRight(id, labelName) {
+            var html =
+                '<div class="input-group my-1">' +
+                '<input type="text" class="form-control outputField" disabled placeholder="" aria-label="Username" aria-describedby="basic-addon1 id="' + id + '">' +
+                '<span class="input-group-text" id="basic-addon1">' + labelName + '</span>' +
+                '</div>';
+
+            return html;
+        }
+
+        function customStyledTextArea(value) {
+            var html =
+                '<div class="form-floating">' +
+                '<textarea class="form-control" placeholder="" id="floatingTextarea2" rows="10">' + value + '</textarea>' +
+                '<label for="floatingTextarea2"></label>' +
+                '</div>';
+
+            return html;
+        }
+
+
+    </script>
+
+</body>
+<style>
+    #mainCont {
+        display: flex;
+        flex-direction: column;
+    }
+
+    body {
+        background-color: rgb(109, 111, 111);
+        padding: 400px;
+    }
+
+    textarea {
+        resize: none;
+    }
+
+    .card {
+        overflow: auto;
+    }
+
+    /* Hide scrollbar for Chrome, Safari etc. */
+    textarea::-webkit-scrollbar,
+    .card::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .card {
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
+    }
+</style>
+
+</html>
