@@ -12,64 +12,86 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER procedure [dbo].[NG_DPL_Exception]
-@sProcessinstanceid varchar(63),
-@sActivityName nvarchar(50)
-
-As 
+ALTER PROCEDURE [dbo].[NG_DPL_Exception]
+    @sProcessinstanceid VARCHAR(63),
+    @sActivityName NVARCHAR(50)
+AS
 BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON; -- Automatically roll back the transaction if an error occurs
 
-	SET NOCOUNT ON
+    DECLARE
+        @SQL NVARCHAR(4000),
+        @LoopCounter INT,
+        @counter NVARCHAR(50),
+        @CurrWSName NVARCHAR(255),
+        @return NVARCHAR(50),
+        @Processinstanceid NVARCHAR(255),
+        @ActivityName NVARCHAR(255),
+        @LoopCounterForParentWI INT;
 
-	DECLARE
-	@SQL nvarchar(4000),
-	@LoopCounter INT,
-	@counter  NVARCHAR(50),
-	@CurrWSName NVARCHAR(255),
-	@return NVARCHAR(50),
-	@Processinstanceid NVARCHAR(255),
-	@ActivityName NVARCHAR(255),
-	@LoopCounterForParentWI INT
+    BEGIN TRANSACTION;
 
-	INSERT INTO ng_audit(col1,col2,col3)  values ('ng_DPL_ChildStatus Line 20',@sProcessinstanceid, @sActivityName)
-	print('@sActivityName ' + @sActivityName)
-	print('@sProcessinstanceid ' + @sProcessinstanceid)	
-	
-	INSERT INTO ng_audit(col1,col2,col3)  values ('ng_DPL_ChildStatus @sActivityName',@sProcessinstanceid, @sActivityName)
-	
-	
-	IF (@sActivityName = 'Error_Handling')
-	BEGIN
-		INSERT INTO ng_audit(col1,col2,col3)  values(' Inside If Condition',@sProcessinstanceid,' line 37');
-		
-		SELECT @LoopCounter =ISNULL(Notify_Counter,0) FROM  NG_DPL_EXTTABLE WITH(nolock) where  winame=@sProcessinstanceid ;
-		
-		INSERT INTO ng_audit(col1,col2,col3) values('
-		after select statement for LoopCounter',@sProcessinstanceid,concat('Loop`Counter ',@LoopCounter));
+    BEGIN TRY
+        -- Initial logging
+        INSERT INTO ng_audit(col1, col2, col3) VALUES ('ng_DPL_ChildStatus Line 20', @sProcessinstanceid, @sActivityName);
+        RAISERROR('@sActivityName: %s', 0, 1, @sActivityName) WITH NOWAIT;
+        RAISERROR('@sProcessinstanceid: %s', 0, 1, @sProcessinstanceid) WITH NOWAIT;
 
-		IF(@LoopCounter < 6)
-		BEGIN
-			INSERT INTO ng_audit(col1,col2,col3)  values('ng_DPL_exception',@sProcessinstanceid,'Inside Counter for NOTIFY');
-			
-			Insert into NG_DPL_GR_DECISION_HISTORY(WI_NAME,Decision,Decision_Date_Time,Workstep,UserName,Remarks) values (@sProcessinstanceid,'Try Again',getdate(),'Error Handling','System','Retry for Notify');
-			
-			update NG_DPL_EXTTABLE set Decision = 'Try Again' where WINAME=@sProcessinstanceid ;
-			
-			set @SQL=concat(concat(concat(concat('UPDATE WFINSTRUMENTTABLE SET ValidTill = DATEADD(second,10, getdate()) where ProcessInstanceID=',','),@sProcessinstanceid),','),' AND workitemId = 1;')
-			print('SQL UPDATE:'+@SQL)
-			INSERT INTO ng_audit(col1,col2,col3)  values('Inside update statement exception',@sProcessinstanceid,@SQL);
-			EXEC sp_executesql @SQL
-			
-			INSERT INTO ng_audit(col1,col2,col3)  values('Inside update statement exception',@sProcessinstanceid,'Valid till set ');
-			
-			print('Inside update statement Notify_DEH');
-			
-			SET @return ='ParentMovedToNotify'
-		END
-	END
-	
-	
-	select @return as ChildStatus
+        INSERT INTO ng_audit(col1, col2, col3) VALUES ('ng_DPL_ChildStatus @sActivityName', @sProcessinstanceid, @sActivityName);
+
+        IF (@sActivityName = 'Error_Handling')
+        BEGIN
+            INSERT INTO ng_audit(col1, col2, col3) VALUES('Inside If Condition', @sProcessinstanceid, 'line 37');
+
+            SELECT @LoopCounter = ISNULL(Notify_Counter, 0) 
+            FROM NG_DPL_EXTTABLE WITH (NOLOCK) 
+            WHERE winame = @sProcessinstanceid;
+
+            INSERT INTO ng_audit(col1, col2, col3) VALUES('after select statement for LoopCounter', @sProcessinstanceid, CONCAT('LoopCounter ', @LoopCounter));
+
+            IF (@LoopCounter < 6)
+            BEGIN
+                INSERT INTO ng_audit(col1, col2, col3) VALUES('ng_DPL_exception', @sProcessinstanceid, 'Inside Counter for NOTIFY');
+
+                INSERT INTO NG_DPL_GR_DECISION_HISTORY(WI_NAME, Decision, Decision_Date_Time, Workstep, UserName, Remarks) 
+                VALUES (@sProcessinstanceid, 'Try Again', GETDATE(), 'Error Handling', 'System', 'Retry for Notify');
+
+                UPDATE NG_DPL_EXTTABLE 
+                SET Decision = 'Try Again' 
+                WHERE WINAME = @sProcessinstanceid;
+
+                -- Correctly form the dynamic SQL statement
+                SET @SQL = N'UPDATE WFINSTRUMENTTABLE SET ValidTill = DATEADD(second, 10, GETDATE()) WHERE ProcessInstanceID = @ProcessInstanceID AND workitemId = 1;';
+                RAISERROR('SQL UPDATE: %s', 0, 1, @SQL) WITH NOWAIT;
+
+                INSERT INTO ng_audit(col1, col2, col3) VALUES('Inside update statement exception', @sProcessinstanceid, @SQL);
+
+                -- Execute the dynamic SQL with parameter
+                EXEC sp_executesql @SQL, N'@ProcessInstanceID VARCHAR(63)', @ProcessInstanceID = @sProcessinstanceid;
+
+                INSERT INTO ng_audit(col1, col2, col3) VALUES('Inside update statement exception', @sProcessinstanceid, 'Valid till set');
+                RAISERROR('Inside update statement Notify_DEH', 0, 1) WITH NOWAIT;
+
+                SET @return = 'ParentMovedToNotify';
+            END
+        END IF;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+
+        -- Log the error details
+        INSERT INTO ng_audit(col1, col2, col3) VALUES('Error in Error_Handling block', @sProcessinstanceid, ERROR_MESSAGE());
+        INSERT INTO DB_Errors (UserName, ErrorNumber, ErrorState, ErrorSeverity, ErrorLine, ErrorProcedure, ErrorMessage, ErrorDateTime)
+        VALUES (SUSER_SNAME(), ERROR_NUMBER(), ERROR_STATE(), ERROR_SEVERITY(), ERROR_LINE(), ERROR_PROCEDURE(), ERROR_MESSAGE(), GETDATE());
+
+        -- Re-raise the error
+        RAISERROR('Error: %s', 16, 1, ERROR_MESSAGE()) WITH NOWAIT;
+    END CATCH
+
+    SELECT @return AS ChildStatus;
 END
 
 
