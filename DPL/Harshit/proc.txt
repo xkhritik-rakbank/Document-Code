@@ -1,0 +1,30 @@
+USE [rakcas]
+GO
+/****** Object:  StoredProcedure [dbo].[NG_DPL_ERROR_HANDLING_PROC]    Script Date: 7/11/2024 12:54:49 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER procedure [dbo].[NG_DPL_ERROR_HANDLING_PROC]
+
+As 
+BEGIN
+SET NOCOUNT ON
+
+DECLARE
+
+@return NVARCHAR(50)
+
+	update WFINSTRUMENTTABLE set ValidTill=DATEADD(MINUTE,15,a.EntryDATETIME)
+	from (select ProcessInstanceID,EntryDATETIME from WFINSTRUMENTTABLE W with (nolock), NG_DPL_EXTTABLE E with (nolock) 
+	where W.ProcessInstanceID = E.WIname and W.ActivityName='Error_Handling' and W.ProcessName='Digital_PL' and e.errorWS_threshold_count<=5 
+	and DATEDIFF(DAY,GETDATE(),ValidTill)>30 and ValidTill is not null )a 
+	where WFINSTRUMENTTABLE.ProcessInstanceID=a.ProcessInstanceID
+	
+
+END
+
+		
+
+		
