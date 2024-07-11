@@ -1,0 +1,22 @@
+PdfPCell cell = new PdfPCell();
+ 
+            // Create a phrase to hold the content
+            Phrase phrase = new Phrase();
+ 
+            // Add first chunk with larger font size
+            Chunk chunk1 = new Chunk("Text with larger font size", bold);
+            phrase.add(chunk1);
+ 
+            // Add second chunk with smaller font size
+            Chunk chunk2 = new Chunk("Text with smaller font size", bold1);
+            phrase.add(chunk2);
+ 
+            // Add phrase to cell
+            cell.addElement(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            cell.setBorder(PdfPCell.NO_BORDER);
+ 
+            // Add cell to table
+            table.addCell(cell);
+            table.addCell(cell);
