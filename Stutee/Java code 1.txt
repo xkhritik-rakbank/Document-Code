@@ -1,0 +1,1 @@
+SELECT  name ColumnName,TYPE_NAME(user_type_id) TypeName,OBJECT_DEFINITION(default_object_id) DefaultValue,max_length MaxLength,PRECISION percisions,scale scales FROM sys.columns WHERE OBJECT_NAME(object_id) ='MyTable4'
