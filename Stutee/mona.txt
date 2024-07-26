@@ -1,0 +1,73 @@
+create PROCEDURE [dbo].[RAK_TWC_PendingWithOPS]
+(
+	@SLA NVARCHAR(50),
+	@BatchingReq nvarchar(5),
+	@BatchSize nvarchar(20),
+	@OrderBy int, 
+	@SortField nvarchar(64), 
+	@SortFieldValue nvarchar(64), 
+	@SortOrder nvarchar(5), 
+	@KeyField nvarchar(64)
+)
+as 
+BEGIN
+		DECLARE @QueryString VARCHAR(MAX)
+		Declare @WhereClause varchar(1000)
+		SET @QueryString=''
+		Set @WhereClause=''
+		create table #TMP(
+        "WorkItem Number" NVARCHAR(100),
+        "Customer Name" NVARCHAR(100),
+        "CIF Number" NVARCHAR(100),
+	    "Initiator" NVARCHAR(100),
+	    "First Level Business Approver" NVARCHAR(100),
+		"Second Level Business Approver" NVARCHAR(100),
+	    "Product" NVARCHAR(100),
+		"Request Type" NVARCHAR(100),
+		"Islamic/Conventional" NVARCHAR(100),
+		"Limit Type" NVARCHAR(100),
+		"LAF number" NVARCHAR(100),
+		"IntroductionDateTime" NVARCHAR(100),
+		"SalesDeferralMaker Entrydatetime" NVARCHAR(100),
+		"Queue Name" NVARCHAR(100),
+		"Entrydatetime" NVARCHAR(100),
+		"Current Queue Ageing" NVARCHAR(100),
+		"Deferral Document Type" NVARCHAR(100),
+		"Deferral Approving Authority" NVARCHAR(100),
+		"Deferral Expiry Date" NVARCHAR(100),
+		"Deferral Remarks" NVARCHAR(100),
+		"Deferral Status"  NVARCHAR(100)
+		)
+		
+		SET @QueryString='SELECT A.Customer_Name,
+		                         A.WI_NAME,
+								 A.CIF_Id,
+								 A.First_Level_Business_Approver,
+								 A.Second_Level_Business_Approver,
+								 A.Product_Identifier,
+								 A.Request_Type,
+								 A.Islamic_Or_Conventional,
+								 A.Limit_Type,
+								 A.Reference_Number,
+								 A.Current_WS,
+								 B.entrydatetime,
+								 C.DOCUMENT_TYPE,
+								 C.APPROVING_AUTH_NAME,
+								 C.DEFERRAL_EXPIRY_DATE,
+								 C.REMARKS,
+								 C.DEFERRAL_STATUS 
+								 FROM
+								 (SELECT TOP 1 Customer_Name,WI_NAME,CIF_Id,First_Level_Business_Approver,Second_Level_Business_Approver,
+								 Product_Identifier,Request_Type,Islamic_Or_Conventional,Limit_Type,Reference_Number,Current_WS FROM RB_TWC_EXTTABLE)A
+								 JOIN
+								 (SELECT TOP 1 winame,entrydatetime FROM USR_0_TWC_WIHISTORY)B ON A.WI_NAME=B.winame
+								 JOIN
+								 (SELECT TOP 1 WINAME,DOCUMENT_TYPE,APPROVING_AUTH_NAME,DEFERRAL_EXPIRY_DATE,REMARKS,DEFERRAL_STATUS FROM USR_0_TWC_DEFERRAL_DTLS_GRID)C ON A.WI_NAME=C.WINAME;'
+									 
+								 SELECT * FROM USR_0_TWC_DEFERRAL_DTLS_GRID WHERE datediff(day,GETDATE(),try_cast(DEFERRAL_EXPIRY_DATE as datetime))>0;
+                                      
+                                     
+
+                                 SELECT A.*,B.* FROM RB_TWC_EXTTABLE A JOIN USR_0_TWC_DEFERRAL_DTLS_GRID B ON A.WI_NAME=B.WINAME
+									WHERE A.Prev_WS in ('CROPS_Deferral_Checker','Sales_Deferral_Maker') AND
+									B.DEFERRAL_STATUS IN ('Deferred','Open');									  
