@@ -1,0 +1,133 @@
+Connect Cabinet:
+
+Endpoint URL: https://10.15.12.164:9443/OmniDocsRestWS_3/rest/services/executeAPIJSON
+
+Request:
+{
+    "NGOExecuteAPIBDO": {
+        "inputData": {
+            "NGOConnectCabinet_Input": {
+                "Option": "NGOConnectCabinet",
+                "UserExist": "N",
+                "CabinetName": "rakcas",
+                "UserName": "bala",
+                "UserPassword": "system123#",
+                "locale": "en_US"
+            }
+        },
+        "base64Encoded": "N",
+        "locale": "en-US"
+    }
+}
+
+
+Response:
+{
+    "NGOExecuteAPIResponseBDO": {
+        "base64Encoded": "N",
+        "statusCode": "0",
+        "outputData": {
+            "NGOConnectCabinet_Output": {
+                "Status": "0",
+                "Services": "",
+                "UserDBId": "-704686499",
+                "Cabinet": {
+                    "Account": "0",
+                    "EnableDataSecurity": "N",
+                    "FTSDatabasePath": "rakcas#2017-02-22 18:34:58",
+                    "LoginUserIndex": "5394",
+                    "CabinetLockFlag": "N",
+                    "PersonalName": "New User",
+                    "SecurityLevel": "2",
+                    "BuildVersion": "10.1.00",
+                    "CabinetType": "B",
+                    "UserTrash": "451114",
+                    "IsMakerCheckerEnabled": "N",
+                    "UserName": "bala",
+                    "EnableDDTFTS": "N",
+                    "CabinetName": "rakcas",
+                    "UserSentItem": "451113",
+                    "UserInbox": "451112",
+                    "LastLoginTime": "2024-08-01 14:12:13.727",
+                    "VersionFlag": "N",
+                    "CreationDateTime": "2017-02-22 18:34:58.277",
+                    "ImageVolumeIndex": "1",
+                    "UserPasswordExpire": "N",
+                    "PreferredFolderIndex": "0",
+                    "Privileges": "1111111111110000",
+                    "ThemeColor": "1281dd",
+                    "TwoFactorAuthenticationFlag": ""
+                },
+                "LeftLoginAttempts": "5",
+                "Option": "NGOConnectCabinet",
+                "Folders": {
+                    "Folder": {
+                        "NoOfSubFolders": "1",
+                        "FinalizedDateTime": "2017-02-22 18:34:58.277",
+                        "Owner": "Supervisor",
+                        "DeletedDateTime": "2017-02-22 18:34:58.277",
+                        "FinalizedFlag": "N",
+                        "ACLMoreFlag": "N",
+                        "FolderName": "rakcas",
+                        "DataDefIndex": "0",
+                        "AccessType": "S",
+                        "FolderType": "G",
+                        "Comment": "",
+                        "LoginUserRights": "010000011",
+                        "AccessDateTime": "2024-07-31 19:03:00.0",
+                        "FolderLock": "N",
+                        "ACL": "G1#010000011,",
+                        "FolderIndex": "0",
+                        "OwnerIndex": "1",
+                        "VersionFlag": "N",
+                        "CreationDateTime": "2017-02-22 18:34:58.277",
+                        "ImageVolumeIndex": "1",
+                        "ExpiryDateTime": "2117-02-22 18:34:58.277",
+                        "RevisedDateTime": "2024-07-19 13:04:05.897",
+                        "NoOfDocuments": "0",
+                        "ParentFolderIndex": "-1",
+                        "Location": "R"
+                    }
+                },
+                "UserType": "U"
+            }
+        }
+    }
+}
+
+
+Dis-Connect Cabinet:
+
+Endpoint URL: https://10.15.12.164:9443/OmniDocsRestWS_3/rest/services/executeAPIJSON
+
+Request:
+{
+    "NGOExecuteAPIBDO": {
+        "inputData": {
+            "NGODisconnectCabinet_Input": {
+                "Option": "NGODisconnectCabinet",
+                "CabinetName": "rakcas",
+				"UserDBId": "-704686499"
+              
+            }
+        }
+      
+    }
+}
+
+
+Response:
+{
+    "NGOExecuteAPIResponseBDO": {
+        "base64Encoded": "N",
+        "statusCode": "0",
+        "outputData": {
+            "NGODisconnectCabinet_Output": {
+                "Status": "0",
+                "UserDBId": "-704686499",
+                "Option": "NGODisconnectCabinet",
+                "LoginUserIndex": "5394"
+            }
+        }
+    }
+}
