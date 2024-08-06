@@ -1,8 +1,33 @@
-<NGOExecuteAPIBDO>%n    <inputXML><![CDATA[<NGOConnectCabinet_Input>
-<Option>NGOConnectCabinet</Option>
-<UserExist>N</UserExist>
-<CabinetName>gib_dev</CabinetName>
-<UserName>chava</UserName>
-<UserPassword>Database123#</UserPassword>
-<locale>en_US</locale>
-</NGOConnectCabinet_Input>]]></inputXML>%n    <base64Encoded>N</base64Encoded>%n    <locale>en_US</locale>%n</NGOExecuteAPIBDO>
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class HtmlToPdf {
+    public static void main(String[] args) {
+        Document document = new Document(PageSize.A4);
+        try {
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("output.pdf"));
+            document.open();
+            String htmlContent = "<!DOCTYPE html>"
+                    + "<html>"
+                    + "<head>"
+                    + "<title>Test Page</title>"
+                    + "</head>"
+                    + "<body>"
+                    + "<p style=\"color: blue; font-size: 16px;\">This is a test page with styled text.</p>"
+                    + "<p style=\"background-color: yellow;\">This paragraph has a yellow background.</p>"
+                    + "</body>"
+                    + "</html>";
+            XMLWorkerHelper.getInstance().parseXHtml(writer, document, new java.io.StringReader(htmlContent));
+        } catch (DocumentException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            document.close();
+        }
+    }
+}
