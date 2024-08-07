@@ -1,0 +1,182 @@
+<html lang='en'>
+<head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>KYC- Annexure</title>
+	
+	
+<script>
+	// <![CDATA[
+    
+    var count = 10
+    var relatedPartyTBody = document.querySelector('#related-party-content table tbody')
+
+    for(var i=0; i<count; i++){
+        var row = document.createElement('tr')
+        
+        for(var j=0; j<9; j++){
+            var col = document.createElement('td')
+            col.textContent = '....'
+            row.appendChild(col)            
+        }
+
+        relatedPartyTBody.appendChild(row)
+    }
+   
+    var count = 10
+    var relatedPartyTBody = document.querySelector('#board-director-content table tbody')
+
+    for(var i=0; i<count; i++){
+        var row = document.createElement('tr')
+        
+        for(var j=0; j<4; j++){
+            var col = document.createElement('td')
+            col.textContent = '....'
+            row.appendChild(col)            
+        }
+
+        relatedPartyTBody.appendChild(row)
+    }
+
+	// ]]>
+</script>
+
+</head>
+<body>
+
+    <!-- Related Parties -->
+    <header id='related-party-header'>
+        
+        <img src='/rak-header_entity.PNG' />
+        <br />
+        <br />
+        <img src='/table-header_entity.PNG' />
+        <br />
+        <br />
+
+    </header>
+
+    <div id='related-party-content' class='main-content container'>
+
+        <table>
+            <tr>
+                <th>Level</th>
+                <th>Name of Shareholder/POA's/Authorised Signatories</th>
+                <th>Type</th>
+                <th>Main Holder</th>
+                <th>Nationality</th>
+                <th>Country of Residence</th>
+                <th>Date of Birth/Date of Incorporation</th>
+                <th>% of shareholding - If applicable</th>
+                <th>UBO</th>
+            </tr>
+                       
+            <tbody>
+                <tr>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                </tr>
+                <tr>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                    <td>data</td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+    
+    <!-- Board of Directors -->
+    <header id='board-director-header'>
+        <br />
+        <br />
+        <hr />
+        <br />
+        <br />
+        <img src='/table-header_annexure.PNG' />
+        <br />
+        <br />
+
+    </header>
+
+    <div id='board-director-content' class='main-content container'>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Nationality</th>
+                <th>Designation</th>
+                <th>Address</th>
+            </tr>
+            <tbody>
+
+            </tbody>            
+
+        </table>
+
+    </div>
+
+</body>
+
+
+
+
+<style>
+    body{
+        padding: 1rem;
+    }
+    #header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        border: 1px solid white;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    td {
+        background-color: #83b4c736;
+    }
+
+    select {
+        width: 100%;
+    }
+
+    table select {
+        border-color: azure;
+    }
+
+    img {
+        width: 100%;
+    }
+    .container {
+        display: flex;
+        align-content: center;
+    }
+
+</style>
+
+</html>
