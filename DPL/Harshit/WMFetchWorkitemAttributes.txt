@@ -1,0 +1,21 @@
+FetchAttributeInputXMl <?xml version="1.0"?>
+<WMFetchWorkItemAttributes_Input>
+<Option>WMFetchWorkItemAttributes</Option><EngineName>rakcas</EngineName>
+<SessionId>245003181</SessionId>
+<ProcessInstanceId>DigitalPL-0000001415-process</ProcessInstanceId>
+<WorkItemId>2</WorkItemId>
+</WMFetchWorkItemAttributes_Input>
+
+[ INFO] 12-Aug-2024 15:23:58 (DPLDocument.java:1325)
+FetchAttributeOutputXMl MainCode: 400`400
+
+[DEBUG] 12-Aug-2024 15:23:58 (DPLDocument.java:1356)
+ Error in Fetch Attribute Output XML-<?xml version="1.0"?>
+<WMFetchWorkItemAttributes_Output>
+<Option>WMFetchWorkItemAttributes</Option>
+<Status>400</Status><Error><Exception><MainCode>400</MainCode><SubErrorCode>804</SubErrorCode><TypeOfError>TEMPORARY</TypeOfError><Subject><Exception>	<MainCode>400</MainCode>
+	<SubErrorCode>804</SubErrorCode>
+	<TypeOfError>TEMPORARY</TypeOfError>
+	<Subject>The requested operation failed.</Subject>
+	<Description>java.lang.StringIndexOutOfBoundsException: String index out of range: 0</Description>
+</Exception></Subject><Description>java.lang.StringIndexOutOfBoundsException: String index out of range: 0</Description></Exception></Error></WMFetchWorkItemAttributes_Output>
