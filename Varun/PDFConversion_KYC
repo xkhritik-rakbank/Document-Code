@@ -1,0 +1,76 @@
+ 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+ 
+import com.itextpdf.html2pdf.HtmlConverter;
+ 
+public class Aiwayi2 {
+	
+	public static void main(String[] args) 
+	{
+
+        System.out.println("replace done");
+		
+        String inputFile = "C:\\Users\\varun-k\\Desktop\\abc.html";
+        String outputFile = "C:\\Users\\varun-k\\Desktop\\abcGen.pdf";
+        
+        doIt();
+        generatePDF(inputFile, outputFile);
+        System.out.println("Done!");
+	}
+	
+    public static void doIt(){
+        
+    	ArrayList<String> lines = new ArrayList<String>();
+        String line = null;
+        
+    	try
+        {
+            File f1 = new File("C:\\Users\\varun-k\\Desktop\\abc.html");
+            FileReader fr = new FileReader(f1);
+            BufferedReader br = new BufferedReader(fr);
+            while ((line = br.readLine()) != null) {
+            	
+                if (line.contains("&<BankName>&")) {
+                	System.out.println("replacing");                	
+                    line = line.replace("&<BankName>&", "RakBankVV");
+                }
+                lines.add(line);
+            }
+            fr.close();
+            br.close();
+ 
+            FileWriter fw = new FileWriter(f1);
+            BufferedWriter out = new BufferedWriter(fw);
+            for(String s : lines)
+                 out.write(s);
+            out.flush();
+            out.close();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    public static void generatePDF(String inputHtmlPath, String outputPdfPath)
+    {
+        try {
+        	HtmlConverter.convertToPdf(new FileInputStream(inputHtmlPath),
+					new FileOutputStream(outputPdfPath));
+			System.out.println("converted");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+	
+	
+}
