@@ -1,41 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-    // Declare the Java method
-    public String myJavaMethod() {
-        // Your Java logic here
-        return "Result from Java Method";
-    }
-
-    // Check if the request is an AJAX call
-    String action = request.getParameter("action");
-    if ("callJavaMethod".equals(action)) {
-        // Call the Java method and return the result
-        String result = myJavaMethod();
-        response.getWriter().write(result);
-        return; // Stop further processing
-    }
-%>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Generate Schedule</title>
-    <script>
-        function SaveLoanSchedule() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "Generate_Schedule.jsp?action=callJavaMethod", true); // Make sure the URL points to the same JSP
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    var response = xhr.responseText;
-                    console.log("Response from Java: " + response);
-                    // Handle the response as needed
-                }
-            };
-            xhr.send();
-        }
-    </script>
-</head>
-<body>
-    <!-- Your existing HTML content -->
-    <button onclick="SaveLoanSchedule()">Save Loan Schedule</button>
-</body>
-</html>
+Application:
+RSA Authenticator 4.3.2.2 (191) for Android
+ 
+Binding ID:
+15182FB6EC8C021C75247990
