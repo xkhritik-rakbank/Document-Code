@@ -1,34 +1,32 @@
-select distinct e.Prospectid as 'Prospect Reference', 
-							e.WiName as 'WI Number', 
-							case when e.MiddleName is null then CONCAT(e.FirstName,' ', e.LastName) else CONCAT(e.FirstName,' ', e.MiddleName,' ', e.LastName) end as 'Customer Name', 
-							e.MobileNo as 'Mobile Number', 
-							e.emailid as 'Email ID', 
-							e.CustomerDeclaredMonthlyIncome as 'Income declared by Customer', 
-							e.FinalTAI as 'Final Income from Dectech', 
-							s.NetSalary1_AMD as 'Income at Underwriting: Net sal 1', 
-							s.NetSalary2_AMD as 'Income at Underwriting: Net sal 2', 
-							s.NetSalary3_AMD as 'Income at Underwriting: Net sal 3', 
-							CONCAT(s.Net_Salary_Month_1,', ', s.Net_Salary_Month_2,', ', s.Net_Salary_Month_3) as 'Net salary amended by Exceptions User', 
-							(select distinct stuff (( select ', 
-							' + Deviation_Description from NG_DPL_GR_DEVIATION_DESCRIPTIO with(nolock) where wi_name=e.WiName for xml path ('')),1,1,'') ) as 'Dectech Deviations', 
-							replace(replace(replace(e.Non_STP_reason,'~', 
-							', 
-							'),'"}', 
-							''),'{"Reasons":"', 
-							'') as 'Non STP Reason', 
-							e.ProspectCreationDate as 'Application Date', 
-							e.Agent_Code as 'Agent Source Code', 
-							d.username as 'Decision taken by',
-							d.Decision_Date_Time as 'Decision Date Time',
-							e.ECRN as 'ECRN', 
-							e.CIF as 'CIF',
-							e.Dec_rejectReason as 'Decline Reason'
-							from NG_DPL_EXTTABLE e  with (nolock)
-							INNER JOIN NG_DPL_IncomeExpense s with (nolock) on e.WiName = s.Wi_Name 
-							LEFT JOIN NG_DPL_GR_DECISION_HISTORY d with (nolock) on e.WiName = d.wi_name AND d.workstep = 'Exception'
-							where ( CAST(e.entryat as date) between   '2024-09-01' and DATEADD(DAY,1, '2024-09-17')) 
-							group by e.Prospectid
-							order by e.WiName desc
-							
-Column 'NG_DPL_EXTTABLE.WINAME' is invalid in the select list because it is not contained in either an aggregate function or the GROUP BY clause.
-							
+SELECT e.Prospectid AS 'Prospect Reference', 
+       e.WiName AS 'WI Number', 
+       CASE WHEN e.MiddleName IS NULL THEN CONCAT(e.FirstName, ' ', e.LastName) 
+            ELSE CONCAT(e.FirstName, ' ', e.MiddleName, ' ', e.LastName) END AS 'Customer Name', 
+       e.MobileNo AS 'Mobile Number', 
+       e.emailid AS 'Email ID', 
+       e.CustomerDeclaredMonthlyIncome AS 'Income declared by Customer', 
+       e.FinalTAI AS 'Final Income from Dectech', 
+       s.NetSalary1_AMD AS 'Income at Underwriting: Net sal 1', 
+       s.NetSalary2_AMD AS 'Income at Underwriting: Net sal 2', 
+       s.NetSalary3_AMD AS 'Income at Underwriting: Net sal 3', 
+       CONCAT(s.Net_Salary_Month_1, ', ', s.Net_Salary_Month_2, ', ', s.Net_Salary_Month_3) AS 'Net salary amended by Exceptions User', 
+       (SELECT DISTINCT STUFF((SELECT ', '+ Deviation_Description FROM NG_DPL_GR_DEVIATION_DESCRIPTIO WITH(NOLOCK) WHERE wi_name = e.WiName FOR XML PATH ('')),1,1,'')) AS 'Dectech Deviations', 
+       REPLACE(REPLACE(REPLACE(e.Non_STP_reason,'~',', ','"}',''),'{"Reasons":"','')) AS 'Non STP Reason', 
+       e.ProspectCreationDate AS 'Application Date', 
+       e.Agent_Code AS 'Agent Source Code', 
+       d.username AS 'Decision taken by', 
+       d.Decision_Date_Time AS 'Decision Date Time', 
+       e.ECRN AS 'ECRN', 
+       e.CIF AS 'CIF', 
+       e.Dec_rejectReason AS 'Decline Reason'
+FROM NG_DPL_EXTTABLE e WITH (NOLOCK)
+INNER JOIN NG_DPL_IncomeExpense s WITH (NOLOCK) ON e.WiName = s.Wi_Name
+LEFT JOIN NG_DPL_GR_DECISION_HISTORY d WITH (NOLOCK) ON e.WiName = d.wi_name AND d.workstep = 'Exception'
+WHERE CAST(e.entryat as date) BETWEEN 2024-09-01 AND DATEADD(DAY, 1, 2024-09-17)
+GROUP BY e.Prospectid, e.WiName, CASE WHEN e.MiddleName IS NULL THEN CONCAT(e.FirstName, '',e.LastName) ELSE CONCAT(e.FirstName,'',e.MiddleName,'',e.LastName) END,
+         e.MobileNo, e.emailid, e.CustomerDeclaredMonthlyIncome, 
+         e.FinalTAI,s.NetSalary1_AMD,s.NetSalary2_AMD,s.NetSalary3_AMD,
+         CONCAT(s.Net_Salary_Month_1,' , ',s.Net_Salary_Month_2,' , ',s.Net_Salary_Month_3),
+         REPLACE(REPLACE(REPLACE(e.Non_STP_reason,'~',' , ','"}',''),'{"Reasons":"','')),
+         ProspectCreationDate,e.Agent_Code,d.username,d.Decision_Date_Time,e.ECRN,e.CIF,e.Dec_rejectReason
+ORDER BY WiNumber DESC;
