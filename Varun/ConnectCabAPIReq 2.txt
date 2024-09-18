@@ -1,8 +1,0 @@
-<NGOExecuteAPIBDO>%n    <inputXML><![CDATA[<NGOConnectCabinet_Input>
-<Option>NGOConnectCabinet</Option>
-<UserExist>N</UserExist>
-<CabinetName>gib_dev</CabinetName>
-<UserName>chava</UserName>
-<UserPassword>Database123#</UserPassword>
-<locale>en_US</locale>
-</NGOConnectCabinet_Input>]]></inputXML>%n    <base64Encoded>N</base64Encoded>%n    <locale>en_US</locale>%n</NGOExecuteAPIBDO>

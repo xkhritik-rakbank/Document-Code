@@ -1,5 +1,0 @@
-Application:
-RSA Authenticator 4.3.2.2 (191) for Android
- 
-Binding ID:
-15182FB6EC8C021C75247990
