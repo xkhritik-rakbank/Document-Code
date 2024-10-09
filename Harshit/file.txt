@@ -1,10 +1,10 @@
 @echo off
-cd /d "%~dp0"
-javac LogFileUtility.java
-if %errorlevel% neq 0 (
+set JAVA_FILE=LogFileUtility.java
+javac %JAVA_FILE%
+if errorlevel 1 (
     echo Compilation failed.
-    pause
-    exit /b %errorlevel%
+    exit /b 1
 )
 java LogFileUtility
+
 pause
