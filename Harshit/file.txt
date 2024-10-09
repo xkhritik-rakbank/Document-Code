@@ -1,10 +1,113 @@
-@echo off
-set JAVA_FILE=LogFileUtility.java
-javac %JAVA_FILE%
-if errorlevel 1 (
-    echo Compilation failed.
-    exit /b 1
-)
-java LogFileUtility
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Scanner;
 
-pause
+public class LogFileUtility {
+
+    public static void main(String[] args) {
+        // Load directories from properties file
+        List<String> directories = loadDirectoriesFromProperties("D:/sLogSweep/config.properties");
+
+        if (directories.isEmpty()) {
+            System.out.println("No directories found in the properties file.");
+            return;
+        }
+
+        Scanner scanner = new Scanner(System.in);
+
+        for (String directoryPath : directories) {
+            File directory = new File(directoryPath);
+            if (directory.exists() && directory.isDirectory()) {
+                // Collect folders to delete
+                List<File> foldersToDelete = new ArrayList<>();
+                collectFoldersToDelete(directory, foldersToDelete);
+
+                if (!foldersToDelete.isEmpty()) {
+                    System.out.println("The following folders contain .log and .xml files larger than 2MB:");
+                    for (File folder : foldersToDelete) {
+                        System.out.println(folder.getAbsolutePath());
+                    }
+
+                    // Ask user confirmation before deleting
+                    System.out.print("Do you want to delete these folders? (yes/no): ");
+                    String userInput = scanner.nextLine();
+
+                    if ("yes".equalsIgnoreCase(userInput)) {
+                        // Delete folders
+                        for (File folder : foldersToDelete) {
+                            deleteFolder(folder);
+                        }
+                    } else {
+                        System.out.println("No folders were deleted.");
+                    }
+                } else {
+                    System.out.println("No folders with .log files larger than 2MB found in: " + directoryPath);
+                }
+            } else {
+                System.out.println("Directory does not exist or is not a directory: " + directoryPath);
+            }
+        }
+
+        // Do not close scanner here
+
+        // Prompt user to press any key to exit
+        System.out.println("Press Enter to exit...");
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static List<String> loadDirectoriesFromProperties(String propertiesFilePath) {
+        List<String> directories = new ArrayList<>();
+        try (FileInputStream input = new FileInputStream(propertiesFilePath)) {
+            Properties prop = new Properties();
+            prop.load(input);
+            String dirs = prop.getProperty("directories");
+            if (dirs != null) {
+                for (String dir : dirs.split(",")) {
+                    directories.add(dir.trim());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading properties file: " + e.getMessage());
+        }
+        return directories;
+    }
+
+    private static void collectFoldersToDelete(File directory, List<File> foldersToDelete) {
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        collectFoldersToDelete(file, foldersToDelete);
+                    } else if ((file.getName().matches("(?i).*\\.log.*") || file.getName().matches("(?i).*\\.xml.*")) && file.length() > 2 * 1024 * 1024) { // Check size > 2MB
+                        foldersToDelete.add(directory);
+                        break; // No need to check more files in this folder
+                    }
+                }
+            }
+        }
+    }
+
+    private static void deleteFolder(File folder) {
+        try {
+            Files.walk(folder.toPath())
+                 .sorted((a, b) -> b.compareTo(a)) // Sort in reverse order to delete files before directories
+                 .map(Path::toFile)
+                 .forEach(File::delete);
+            System.out.println("Deleted folder: " + folder.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Failed to delete folder: " + folder.getAbsolutePath());
+            e.printStackTrace();
+        }
+    }
+}
