@@ -1,0 +1,34 @@
+import org.apache.poi.xwpf.usermodel.*;
+import org.apache.poi.xwpf.usermodel.XWPFHeaderFooterPolicy.HeaderFooterType;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class FooterExample {
+
+    public static void main(String[] args) {
+        // Create a new Word document
+        XWPFDocument document = new XWPFDocument();
+
+        try (FileOutputStream out = new FileOutputStream("footer-example.docx")) {
+            // Create a header/footer policy for the document
+            XWPFHeaderFooterPolicy headerFooterPolicy = document.createHeaderFooterPolicy();
+
+            // Create a default footer (use HeaderFooterType.DEFAULT instead of STHdrFtr.DEFAULT)
+            XWPFFooter footer = headerFooterPolicy.createFooter(HeaderFooterType.DEFAULT);
+
+            // Create a paragraph in the footer
+            XWPFParagraph paragraph = footer.createParagraph();
+            paragraph.setAlignment(ParagraphAlignment.CENTER);
+
+            // Add some text to the footer
+            XWPFRun run = paragraph.createRun();
+            run.setText("This is the footer text");
+
+            // Write the document to the output stream
+            document.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
