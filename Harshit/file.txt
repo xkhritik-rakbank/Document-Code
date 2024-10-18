@@ -1,76 +1,20 @@
-public
-class
-UpdateHeaderFooterImagesExample
-{    
-public
-static
-void
-main
-(String[] args)
-throws
-Exception {        
-// Load the existing document
-String
-documentPath =
-"path/to/your/existing/document.docx"
-;
-// Specify the path to your existing document
-Document
-doc =
-new
-Document
-(documentPath);                
-// Create a DocumentBuilder for the document
-DocumentBuilder
-builder =
-new
-DocumentBuilder
-(doc);        
-// Access the first section
-Section
-section = doc.getFirstSection();        
-// Create a header and a footer for the first page
-HeaderFooter
-header =
-new
-HeaderFooter
-(doc, HeaderFooterType.HEADER_PRIMARY);        
-HeaderFooter
-footer =
-new
-HeaderFooter
-(doc, HeaderFooterType.FOOTER_PRIMARY);        
-// Add an image to the header
-String
-headerImagePath =
-"path/to/your/headerImage.png"
-;
-// Specify the path to your header image
-try
-(
-InputStream
-headerImageStream =
-new
-FileInputStream
-(headerImagePath)) {             builder.moveToHeaderFooter(header.getHeaderFooterType());            builder.insertImage(headerImageStream);        }        
-// Add an image to the footer
-String
-footerImagePath =
-"path/to/your/footerImage.png"
-;
-// Specify the path to your footer image
-try
-(
-InputStream
-footerImageStream =
-new
-FileInputStream
-(footerImagePath)) { builder.moveToHeaderFooter(footer.getHeaderFooterType()); builder.insertImage(footerImageStream); }
-// Assign the header and footer to the first section
-section.setHeader(header); section.setFooter(footer);
-// Set the header and footer to only show on the first page
-section.getPageSetup().setDifferentFirstPageHeaderFooter(true);
-// Save the modified document
-doc.save(
-"path/to/save/UpdatedDocument.docx"
-); }
+WITH CTE AS (
+    SELECT 
+        column_name,
+        CAST(SUBSTRING(column_name, 1, CHARINDEX('|', column_name + '|') - 1) AS VARCHAR(100)) AS SplitValue,
+        CAST(STUFF(column_name, 1, CHARINDEX('|', column_name + '|'), '') AS VARCHAR(MAX)) AS RemainingString
+    FROM your_table_name
+ 
+    UNION ALL
+ 
+    SELECT 
+        column_name,
+        CAST(SUBSTRING(RemainingString, 1, CHARINDEX('|', RemainingString + '|') - 1) AS VARCHAR(100)),
+        CAST(STUFF(RemainingString, 1, CHARINDEX('|', RemainingString + '|'), '') AS VARCHAR(MAX))
+    FROM CTE
+    WHERE RemainingString != ''
+)
+SELECT column_name, SplitValue
+FROM CTE
+ORDER BY column_name
+OPTION (MAXRECURSION 0);
