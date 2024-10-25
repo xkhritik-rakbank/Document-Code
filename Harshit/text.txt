@@ -1,0 +1,38 @@
+WITH DistinctProductTypes AS (
+    SELECT 
+        WI_NAME,
+        STUFF((SELECT DISTINCT ' | ' + SplitValue 
+               FROM CTE AS InnerC
+               WHERE InnerC.WI_NAME = OuterC.WI_NAME
+               FOR XML PATH('')), 1, 3, '') AS SplitValues
+    FROM CTE AS OuterC
+    GROUP BY WI_NAME
+)
+
+SELECT 
+    B.actiondatetime AS [APPROVAL DATE],
+    A.FinalCreditApproverAuth AS [APPROVING AUTHORITY],
+    A.WI_NAME,
+    A.CHANNEL AS [DIVISION],
+    A.CIF_Id AS [CIF],
+    A.Customer_Name AS [CUSTOMER NAME],
+    A.Request_Type AS [PROPOSAL TYPE],
+    D.SplitValues AS [PRODUCT TYPE (TWC/FIGP/CRE/ABF)],
+    A.Master_Facility_Limit AS [TOTAL CUSTOMER LIMIT APPROVED(AED 000)], 
+    (CASE WHEN A.Breach_Deviation = '' THEN 'No' ELSE A.Breach_Deviation END) AS [CREDIT POLICY BREACH (Y/N)],
+    '' AS [POLICY BREACH DETAILS],
+    '' AS [NEW/EXISTING]
+FROM 
+    RB_TWC_EXTTABLE AS A
+    JOIN USR_0_TWC_WIHISTORY AS B ON A.[WI_NAME] = B.winame
+    JOIN DistinctProductTypes AS D ON B.winame = D.WI_NAME
+WHERE
+    B.actiondatetime BETWEEN ''' + @FromDate + ''' AND ''' + @ToDate + '''
+    AND A.CHANNEL = 'BBG-SME'
+    AND (A.Breach_Deviation = 'No' OR A.Breach_Deviation = '')
+    AND B.wsname = 'Credit_Analyst' 
+    AND B.decision = 'Approve'
+    AND D.SplitValues IS NOT NULL
+ORDER BY 
+    actiondatetime DESC 
+OPTION (MAXRECURSION 0);
