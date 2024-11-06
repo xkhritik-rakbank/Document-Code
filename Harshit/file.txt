@@ -1,20 +1,22 @@
-WITH CTE AS (
-    SELECT 
-        column_name,
-        CAST(SUBSTRING(column_name, 1, CHARINDEX('|', column_name + '|') - 1) AS VARCHAR(100)) AS SplitValue,
-        CAST(STUFF(column_name, 1, CHARINDEX('|', column_name + '|'), '') AS VARCHAR(MAX)) AS RemainingString
-    FROM your_table_name
- 
-    UNION ALL
- 
-    SELECT 
-        column_name,
-        CAST(SUBSTRING(RemainingString, 1, CHARINDEX('|', RemainingString + '|') - 1) AS VARCHAR(100)),
-        CAST(STUFF(RemainingString, 1, CHARINDEX('|', RemainingString + '|'), '') AS VARCHAR(MAX))
-    FROM CTE
-    WHERE RemainingString != ''
-)
-SELECT column_name, SplitValue
-FROM CTE
-ORDER BY column_name
-OPTION (MAXRECURSION 0);
+function dateDiff(date1, date2) {
+    // Convert the dates from 'dd/mm/yyyy' to 'mm/dd/yyyy' format
+    let parts1 = date1.split('/');
+    let parts2 = date2.split('/');
+    
+    // Create Date objects
+    let d1 = new Date(`${parts1[2]}-${parts1[1]}-${parts1[0]}`);
+    let d2 = new Date(`${parts2[2]}-${parts2[1]}-${parts2[0]}`);
+    
+    // Calculate the difference in time
+    let diffTime = Math.abs(d2 - d1);
+    
+    // Convert the time difference to days
+    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+}
+
+// Example usage
+let date1 = "01/10/2024";
+let date2 = "10/10/2024";
+console.log(dateDiff(date1, date2)); // Outputs: 9
