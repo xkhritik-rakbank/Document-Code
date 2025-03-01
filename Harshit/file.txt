@@ -1,14 +1,53 @@
-public static File findXMLFile(String folderPath, String targetFileName) {
-    File folder = new File(folderPath);
-    
-    // Look for the specific XML file matching the target name
-    File targetFile = new File(folder, targetFileName + ".xml");
-    
-    // Check if the target file exists and return it
-    if (targetFile.exists() && targetFile.isFile()) {
-        return targetFile;
+public static String executeQuery(String processName, String query) {
+    try (Connection connection = getConnection()) {
+        String prospect = "";
+        String checkProspectQuery = "";
+        int count = 0;
+
+        do {
+            // Execute the first query and get the prospect value
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery(query)) {
+
+                if (rs.next()) {
+                    if ("DAO".equals(processName) || "DCC".equals(processName)) {
+                        prospect = rs.getString("Prospect_ID");
+                        checkProspectQuery = "SELECT COUNT(*) as Count FROM NG_" + processName + "_EXTTABLE WHERE Prospect_ID = '" + (Integer.parseInt(prospect) + 1) + "'";
+                    } else {
+                        prospect = rs.getString("ProspectID");
+                        checkProspectQuery = "SELECT COUNT(*) as Count FROM NG_DPL_EXTTABLE WHERE ProspectID = '" + (Integer.parseInt(prospect) + 1) + "'";
+                    }
+                }
+            }
+
+            // Execute the second query to check the count
+            try (Statement stmt1 = connection.createStatement();
+                 ResultSet rs1 = stmt1.executeQuery(checkProspectQuery)) {
+
+                if (rs1.next()) {
+                    count = rs1.getInt("Count");
+                    if (count > 0) {
+                        prospect = String.valueOf(Integer.parseInt(prospect) + 1);
+                        // Update the original query with the incremented prospect value
+                        if ("DAO".equals(processName) || "DCC".equals(processName)) {
+                            query = "SELECT Prospect_ID FROM NG_" + processName + "_EXTTABLE WHERE Prospect_ID = '" + prospect + "'";
+                        } else {
+                            query = "SELECT ProspectID FROM NG_DPL_EXTTABLE WHERE ProspectID = '" + prospect + "'";
+                        }
+                    }
+                }
+            }
+        } while (count > 0);
+
+        System.out.println("Final Prospect: " + prospect);
+        return prospect;
+
+    } catch (ClassNotFoundException e) {
+        System.err.println("SQL Server JDBC Driver not found!");
+        e.printStackTrace();
+    } catch (SQLException e) {
+        System.err.println("Query execution failed!");
+        e.printStackTrace();
     }
-    
-    // If target file not found, return null
-    return null;
+    return "";
 }
