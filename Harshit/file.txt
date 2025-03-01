@@ -7,46 +7,31 @@ import java.sql.ResultSet;
 public class MSSQLJDBCConnection {
     
     // JDBC URL, username, and password of the database
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=YourDatabase";
+    private static final String URL = "jdbc:sqlserver://10.11.23.34,4501;databaseName=YourDatabase";
     private static final String USER = "your_username";
     private static final String PASSWORD = "your_password";
 
-    public static void main(String[] args) {
-        Connection connection = null;
-        
-        try {
-            // Load SQL Server JDBC driver
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    public static Connection getConnection() throws SQLException, ClassNotFoundException {
+        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+
+    public static void executeQuery(String query) {
+        try (Connection connection = getConnection();
+             Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
             
-            // Establish the connection
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Connected to the database successfully!");
-            
-            // Create and execute a SELECT query
-            String query = "SELECT id, name FROM YourTable";
-            try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String name = rs.getString("name");
-                    System.out.println("ID: " + id + ", Name: " + name);
-                }
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                System.out.println("ID: " + id + ", Name: " + name);
             }
         } catch (ClassNotFoundException e) {
             System.err.println("SQL Server JDBC Driver not found!");
             e.printStackTrace();
         } catch (SQLException e) {
-            System.err.println("Connection failed!");
+            System.err.println("Query execution failed!");
             e.printStackTrace();
-        } finally {
-            // Close the connection
-            if (connection != null) {
-                try {
-                    connection.close();
-                    System.out.println("Connection closed.");
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
