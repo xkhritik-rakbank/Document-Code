@@ -1,1 +1,40 @@
-https://teams.microsoft.com/l/meetup-join/19%3ameeting_MWFlYzE4ZmItNTY0Yy00NTU3LWEzN2MtNGM2NTM5MDhlM2Zm%40thread.v2/0?context=%7b%22Tid%22%3a%220f09972d-7e48-4deb-a2d9-28dcee7dea82%22%2c%22Oid%22%3a%2270db573a-dda7-48ae-b654-23674b5bcb14%22%7d
+public static void updateProspectId(String filePath, String newProspectId) {
+        try {
+            // Load XML file
+            File xmlFile = new File(filePath);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(xmlFile);
+            doc.getDocumentElement().normalize();
+
+            // Find the ProspectID <Value> tag
+            NodeList attributes = doc.getElementsByTagName("Attribute");
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attrNode = attributes.item(i);
+                if (attrNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element attributeElement = (Element) attrNode;
+                    Element nameElement = (Element) attributeElement.getElementsByTagName("Name").item(0);
+                    
+                    if (nameElement.getTextContent().trim().equals("ProspectID")) {
+                        Element valueElement = (Element) attributeElement.getElementsByTagName("Value").item(0);
+                        valueElement.setTextContent(newProspectId);
+                        break;
+                    }
+                }
+            }
+
+            // Save changes back to XML file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(filePath));
+            transformer.transform(source, result);
+
+            System.out.println("ProspectID updated successfully.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
