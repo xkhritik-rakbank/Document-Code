@@ -1,16 +1,20 @@
-private static void removeEmptyTextNodes(Node node) {
-    NodeList nodeList = node.getChildNodes();
-    for (int i = nodeList.getLength() - 1; i >= 0; i--) {
-        Node child = nodeList.item(i);
-        
-        if (child.getNodeType() == Node.ELEMENT_NODE) {
-            removeEmptyTextNodes(child); // Recursive cleanup
-        }
-        
-        if (child.getNodeType() == Node.TEXT_NODE) {
-            if (child.getTextContent().trim().isEmpty()) {
-                node.removeChild(child); // Remove empty text nodes
-            }
-        }
-    }
-}
+@echo off
+:start
+cls
+
+REM Compile Java files (if needed)
+javac YourMainClass.java
+
+REM Run the Java application
+java YourMainClass
+
+REM Prompt for continuation
+echo.
+echo Do you want to run the application again?
+set /p choice="Press 'Y' to continue, or any other key to exit: "
+
+REM Check user input
+if /I "%choice%"=="Y" goto start
+
+REM Optional: Add a pause before completely closing
+pause
