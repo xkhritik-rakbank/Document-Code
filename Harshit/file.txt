@@ -1,11 +1,16 @@
-private static void normalizeWhitespace(Node node) {
-        NodeList children = node.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if (child.getNodeType() == Node.TEXT_NODE) {
-                child.setTextContent(child.getTextContent().trim());
-            } else if (child.getNodeType() == Node.ELEMENT_NODE) {
-                normalizeWhitespace(child);
+private static void removeEmptyTextNodes(Node node) {
+    NodeList nodeList = node.getChildNodes();
+    for (int i = nodeList.getLength() - 1; i >= 0; i--) {
+        Node child = nodeList.item(i);
+        
+        if (child.getNodeType() == Node.ELEMENT_NODE) {
+            removeEmptyTextNodes(child); // Recursive cleanup
+        }
+        
+        if (child.getNodeType() == Node.TEXT_NODE) {
+            if (child.getTextContent().trim().isEmpty()) {
+                node.removeChild(child); // Remove empty text nodes
             }
         }
     }
+}
