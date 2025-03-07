@@ -1,20 +1,55 @@
-@echo off
-:start
-cls
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
-REM Compile Java files (if needed)
-javac YourMainClass.java
+public class FolderRenamer {
 
-REM Run the Java application
-java YourMainClass
+    /**
+     * Renames a folder based on user input and moves it to a different path.
+     * 
+     * @param sourcePath The original path of the folder.
+     * @param destinationPath The path where the folder will be moved.
+     * @param newFolderName The new name for the folder.
+     */
+    public static void renameAndMoveFolder(String sourcePath, String destinationPath, String newFolderName) {
+        // Check if source folder exists
+        Path sourceFolderPath = Paths.get(sourcePath);
+        if (!Files.exists(sourceFolderPath)) {
+            System.out.println("Source folder does not exist.");
+            return;
+        }
 
-REM Prompt for continuation
-echo.
-echo Do you want to run the application again?
-set /p choice="Press 'Y' to continue, or any other key to exit: "
+        // Check if source is a directory
+        if (!Files.isDirectory(sourceFolderPath)) {
+            System.out.println("Source path is not a directory.");
+            return;
+        }
 
-REM Check user input
-if /I "%choice%"=="Y" goto start
+        // Construct new destination path with the new folder name
+        Path newDestinationPath = Paths.get(destinationPath, newFolderName);
 
-REM Optional: Add a pause before completely closing
-pause
+        // Check if destination folder already exists
+        if (Files.exists(newDestinationPath)) {
+            System.out.println("Destination folder already exists.");
+            return;
+        }
+
+        // Rename and move the folder
+        try {
+            Files.move(sourceFolderPath, newDestinationPath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Folder renamed and moved successfully.");
+        } catch (IOException e) {
+            System.out.format("Error moving folder: %s%n", e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        String sourcePath = "/path/to/original/folder";
+        String destinationPath = "/path/to/destination";
+        String newFolderName = "newFolderName";
+
+        renameAndMoveFolder(sourcePath, destinationPath, newFolderName);
+    }
+}
