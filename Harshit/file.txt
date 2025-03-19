@@ -1,1 +1,18 @@
-https://teams.microsoft.com/l/meetup-join/19:meeting_Yzg0ZjNlZTMtY2JhNS00ZWU4LWJlNjMtNjA0YzM5ZTdkNjNi@thread.v2/0?context=%7B%22Tid%22:%220f09972d-7e48-4deb-a2d9-28dcee7dea82%22,%22Oid%22:%22eb31e862-52fe-4716-8fe0-a2633e9be959%22%7D
+public static LocalDateTime getNextBusinessDayAt8AM(LocalDateTime currentDate) {
+        // Get next day
+        LocalDate nextDay = currentDate.toLocalDate().plusDays(1);
+        
+        // Check if next day is Sunday
+        if (nextDay.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            // Skip to Monday
+            nextDay = nextDay.plusDays(1);
+        }
+        
+        // Set time to 8:00 AM
+        return LocalDateTime.of(nextDay, LocalTime.of(8, 0));
+    }
+
+LocalDateTime today = LocalDateTime.now();
+        LocalDateTime nextBusinessDay = getNextBusinessDayAt8AM(today);
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
