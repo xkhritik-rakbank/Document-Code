@@ -1,64 +1,83 @@
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-public class JsonPlaceholderExample {
+public class JsonPlaceholderExampleJava8 {
     public static void main(String[] args) {
         // Base URL for JSONPlaceholder API
         String baseUrl = "https://jsonplaceholder.typicode.com";
 
-        // Create an instance of HttpClient
-        HttpClient client = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_2)
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
-
-        // JSON request body for creating a new post
-        String jsonBody = "{"
-            + "\"title\": \"foo\","
-            + "\"body\": \"bar\","
-            + "\"userId\": 1"
-            + "}";
-
-        // Create the HTTP POST request to create a new post
-        HttpRequest postRequest = HttpRequest.newBuilder()
-            .uri(URI.create(baseUrl + "/posts"))
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-            .build();
-
         try {
-            // Send the POST request and get the response
-            HttpResponse<String> postResponse = client.send(postRequest, HttpResponse.BodyHandlers.ofString());
+            // POST Request
+            URL postUrl = new URL(baseUrl + "/posts");
+            HttpURLConnection postConnection = (HttpURLConnection) postUrl.openConnection();
+            
+            // Set request method and headers
+            postConnection.setRequestMethod("POST");
+            postConnection.setRequestProperty("Content-Type", "application/json");
+            postConnection.setDoOutput(true);
 
-            // Print the POST response details
+            // JSON request body for creating a new post
+            String jsonBody = "{"
+                + "\"title\": \"foo\","
+                + "\"body\": \"bar\","
+                + "\"userId\": 1"
+                + "}";
+
+            // Send POST request
+            try (DataOutputStream outputStream = new DataOutputStream(postConnection.getOutputStream())) {
+                outputStream.writeBytes(jsonBody);
+                outputStream.flush();
+            }
+
+            // Read POST response
+            int postResponseCode = postConnection.getResponseCode();
+            StringBuilder postResponse = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(postConnection.getInputStream()))) {
+                String inputLine;
+                while ((inputLine = reader.readLine()) != null) {
+                    postResponse.append(inputLine);
+                }
+            }
+
+            // Print POST response
             System.out.println("POST Request Response:");
-            System.out.println("Status Code: " + postResponse.statusCode());
-            System.out.println("Response Body: " + postResponse.body());
+            System.out.println("Status Code: " + postResponseCode);
+            System.out.println("Response Body: " + postResponse.toString());
 
-            // Create a GET request to fetch a specific post
-            HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create(baseUrl + "/posts/1"))
-                .GET()
-                .build();
+            // GET Request
+            URL getUrl = new URL(baseUrl + "/posts/1");
+            HttpURLConnection getConnection = (HttpURLConnection) getUrl.openConnection();
+            
+            // Set request method
+            getConnection.setRequestMethod("GET");
 
-            // Send the GET request and get the response
-            HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+            // Read GET response
+            int getResponseCode = getConnection.getResponseCode();
+            StringBuilder getResponse = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(getConnection.getInputStream()))) {
+                String inputLine;
+                while ((inputLine = reader.readLine()) != null) {
+                    getResponse.append(inputLine);
+                }
+            }
 
-            // Print the GET response details
+            // Print GET response
             System.out.println("\nGET Request Response:");
-            System.out.println("Status Code: " + getResponse.statusCode());
-            System.out.println("Response Body: " + getResponse.body());
+            System.out.println("Status Code: " + getResponseCode);
+            System.out.println("Response Body: " + getResponse.toString());
 
-        } catch (IOException e) {
-            System.err.println("IO Error: " + e.getMessage());
+            // Close connections
+            postConnection.disconnect();
+            getConnection.disconnect();
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            System.err.println("Request was interrupted: " + e.getMessage());
-            Thread.currentThread().interrupt();
         }
     }
 }
