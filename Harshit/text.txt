@@ -1,1 +1,64 @@
-^[0-9]*\.[0-9]{2}$ or ^[0-9]*\.[0-9][0-9]$
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
+public class JsonPlaceholderExample {
+    public static void main(String[] args) {
+        // Base URL for JSONPlaceholder API
+        String baseUrl = "https://jsonplaceholder.typicode.com";
+
+        // Create an instance of HttpClient
+        HttpClient client = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_2)
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
+
+        // JSON request body for creating a new post
+        String jsonBody = "{"
+            + "\"title\": \"foo\","
+            + "\"body\": \"bar\","
+            + "\"userId\": 1"
+            + "}";
+
+        // Create the HTTP POST request to create a new post
+        HttpRequest postRequest = HttpRequest.newBuilder()
+            .uri(URI.create(baseUrl + "/posts"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+            .build();
+
+        try {
+            // Send the POST request and get the response
+            HttpResponse<String> postResponse = client.send(postRequest, HttpResponse.BodyHandlers.ofString());
+
+            // Print the POST response details
+            System.out.println("POST Request Response:");
+            System.out.println("Status Code: " + postResponse.statusCode());
+            System.out.println("Response Body: " + postResponse.body());
+
+            // Create a GET request to fetch a specific post
+            HttpRequest getRequest = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl + "/posts/1"))
+                .GET()
+                .build();
+
+            // Send the GET request and get the response
+            HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
+            // Print the GET response details
+            System.out.println("\nGET Request Response:");
+            System.out.println("Status Code: " + getResponse.statusCode());
+            System.out.println("Response Body: " + getResponse.body());
+
+        } catch (IOException e) {
+            System.err.println("IO Error: " + e.getMessage());
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            System.err.println("Request was interrupted: " + e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
+}
