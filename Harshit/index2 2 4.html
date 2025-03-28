@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Modal with Text Area - jQuery Syntax</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Button to open the modal -->
+    <button type="button" class="btn btn-primary" id="openModalBtn">Open Modal</button>
+
+
+    <div class="">
+        <div class="">
+            <!-- Left-aligned content -->
+            <table>
+                <tr>
+                    <td style="text-align: center;">
+                        <!-- English content goes here -->
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+
+
+    <script>
+        $(document).ready(function () {
+
+            var modalHTML =
+                '<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">' +
+                '<div class="modal-dialog modal-xl" role="document">' +
+                '<div class="modal-content">' +
+                '<div class="modal-header">' +
+                '<h4 class="modal-title" id="exampleModalLabel">Mail Preview</h4>' +
+                '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                '<span aria-hidden="true">&times;</span>' +
+                '</button>' +
+                '</div>' +
+
+                // modal starts
+                '<div class="modal-body p-5">' +
+                '<div class="form-floating" id="mainCont">' +
+                '<div class="row">' +
+
+
+                // left part
+                '<div class="">' +
+                '<table>';
+
+
+            var imgText = `
+                        <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:12pt;"><img src="data:image/png;base64,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" width="181" height="53" alt="https://cdn-inbcontent-ae2.azureedge.net/emailcontentdata/2EC8E2C7-5D74-4245-A0CE-451BE1BF106D?sv=2023-08-03&st=2024-02-02T05%3A48%3A20Z&se=2074-01-20T05%3A48%3A20Z&sr=b&sp=r&sig=Db%2BGE0Cg1ci8bfX58aZz4NTYlt3XgOt6q9eC%2BncAXPE%3D"></p>
+                    `;
+
+            modalHTML += '<tr>' +
+                '<td style="text-align: left;">';
+
+
+            modalHTML += customStyledCard(19, `${imgText} <br> Hello,<br><br>Thank you for choosing <b>RAKBANK</b> as your preferred banking partner. Your KYC “Know Your Customer” details are due for a refresh! This is a part of the Bank’s continuous efforts to maintain your profile up to date. <br><br> Please review the attached KYC form, confirm or update existing details (if changed) and provide missing information. <b>Ensure to save the form after completion and send us the finalized copy, along with the following list of documents:</b>
+            <br>
+            `);
+
+            modalHTML += customStyledCard(10, `<textarea class='naked' id="textarea" name="textarea" rows="3" cols="50">\t1.\n\t2.\n\t3.\n\t4.
+            </textarea>`);
+
+
+            modalHTML += customStyledCard(45, `After we review the documents you’ve submitted, we may require some additional documents and will definitely inform you accordingly.<br><br>Please ensure your details are updated in <b>15</b> days, by simply replying to this email with copies of the listed documents. Please make sure that you do not alter the subject line.<br><br><b>Note:</b> It is important to ensure that you provide clear documents from your registered email ID, so we can process your update without any delays.<br><br>For further clarification or support required in sending across the requested documents, please contact our KYC support team on XX-XXXXXXX from X am to X pm, quoting your reference number: (CaseID). Our representatives will contact you or meet you in person at your convenience, for document collection.<br><br><u><b>Get in touch</b></u><br>
+                <b>For general queries or feedback:</b>
+            <ul>
+                <li>Write to us <a href='https://www.rakbank.ae/en/contact-us'><span style="color:red;">here</span></a>.
+                <li>Chat with us at <a href='https://www.rakbank.ae/en'><span style="color:red;">www.rakbank.ae</span></a>
+            </ul>
+            <p>
+            <b>For complaints:</b><br>
+            You can use any of the channels above or <a href='https://www.rakbank.ae/en/complaints'><span style="color:red;">click here</span></a> to directly register your complaint. We aim to respond to all your emails within 1 working day (Mondays to Fridays: 8:00 am to 3:00 pm, excluding weekends and public holidays).
+            <br>
+            <br>
+            Assuring you of our best attention at all times.
+            <br>
+            <br>
+            Your banking partner,
+            <br>
+            <div style="color:red;"><b>RAKBANK</b></div>
+            </p>
+            </td>
+            </tr>
+            `);
+
+            // Arabic part starts
+
+            modalHTML += '<tr><td style="text-align: right; direction: rtl;">';
+
+            modalHTML += customStyledCard(18, `
+            <br>مرحباً،<br><br>شكراً لاختيارك <b>مصرف رأس الخيمة الوطني</b> كشريك مصرفي مفضل لديك. تحتاج تفاصيل الـ KYC "معرفة العميل" الخاصة بك إلى تحديث! هذا جزء من الجهود المستمرة للبنك للحفاظ على ملفك الشخصي محدثًا. <br><br> يرجى مراجعة النموذج المرفق KYC، وتأكيد أو تحديث التفاصيل الحالية (إذا تغيرت) وتقديم المعلومات المفقودة. <b>تأكد من حفظ النموذج بعد الانتهاء وإرسال النسخة النهائية لنا، جنبًا إلى جنب مع الوثائق المدرجة أدناه:</b><br>
+            `);
+
+            modalHTML += customStyledCard(10, `<textarea class='naked' id="textarea-arabic" name="textarea" rows="3" cols="50">\t.1\n\t.2\n\t.3\n\t.4
+            </textarea>`);
+
+
+            /*
+            modalHTML += customStyledCard(45, `بعد مراجعة المستندات التي قمتم بتقديمها، قد نطلب بعض المستندات الإضافية وسنقوم بإبلاغكم بذلك بالتأكيد.<br><br>يرجى التأكد من تحديث تفاصيلكم خلال <b>15</b> يومًا، من خلال الرد على هذا البريد الإلكتروني بنسخ من الوثائق المدرجة. يرجى التأكد من عدم تغيير سطر الموضوع.<br><br><b>ملاحظة:</b> من المهم التأكد من تقديم مستندات واضحة من بريدكم الإلكتروني المسجل، حتى نتمكن من معالجة التحديث الخاص بكم دون أي تأخير.<br><br>للمزيد من التوضيح أو الدعم المطلوب لإرسال المستندات المطلوبة، يرجى الاتصال بفريق دعم KYC الخاص بنا على XX-XXXXXXX من الساعة X صباحًا إلى الساعة X مساءً، مع ذكر رقم المرجع الخاص بكم: (CaseID). سيتواصل معكم ممثلونا أو يلتقون بكم شخصيًا في الوقت الذي يناسبكم لجمع المستندات.<br><br><u><b>تواصل معنا</b></u><br>
+                <b>للاستفسارات العامة أو الملاحظات:</b>
+            <ul>
+                <li>اكتب لنا <a href='https://www.rakbank.ae/en/contact-us'><span style="color:red;">هنا</span></a>.
+                <li>تحدث معنا على <a href='https://www.rakbank.ae/en'><span style="color:red;">www.rakbank.ae</span></a>
+            </ul>
+            <p>
+            <b>للشكاوى:</b><br>
+            يمكنك استخدام أي من القنوات أعلاه أو <a href='https://www.rakbank.ae/en/complaints'><span style="color:red;">اضغط هنا</span></a> لتسجيل شكواك مباشرة. نحن نسعى للرد على جميع رسائلكم الإلكترونية في غضون يوم عمل واحد (من الاثنين إلى الجمعة: من الساعة 8:00 صباحًا إلى الساعة 3:00 مساءً، باستثناء عطلات نهاية الأسبوع والعطلات الرسمية).
+            <br>
+            <br>
+            نؤكد لكم اهتمامنا الكامل في جميع الأوقات.
+            <br>
+            <br>
+            شريككم المصرفي،
+            <br>
+            <div style="color:red;"><b>مصرف رأس الخيمة الوطني</b></div>
+            </p>
+            </td>
+            </tr>
+            `);
+
+            <ul>
+                <li>Write to us <a href='https://www.rakbank.ae/en/contact-us'><span style="color:red;">here</span></a>.
+                <li>Chat with us at <a href='https://www.rakbank.ae/en'><span style="color:red;">www.rakbank.ae</span></a>
+            </ul>
+            <p>
+            <b>For complaints:</b><br>
+            You can use any of the channels above or <a href='https://www.rakbank.ae/en/complaints'><span style="color:red;">click here</span></a> to directly register your complaint. We aim to respond to all your emails within 1 working day (Mondays to Fridays: 8:00 am to 3:00 pm, excluding weekends and public holidays).
+            <br>
+            <br>
+            Assuring you of our best attention at all times.
+            <br>
+            <br>
+            Your banking partner,
+            <br>
+            <div style="color:red;"><b>RAKBANK</b></div>
+            </p>`);
+            */
+
+            modalHTML += customStyledCard(38, `بعد مراجعة المستندات التي قمتم بتقديمها، قد نطلب بعض المستندات الإضافية وسنقوم بإبلاغكم بذلك بالتأكيد.<br><br>يرجى التأكد من تحديث تفاصيلكم خلال <b>15</b> يومًا، من خلال الرد على هذا البريد الإلكتروني بنسخ من الوثائق المدرجة. يرجى التأكد من عدم تغيير سطر الموضوع.<br><br><b>ملاحظة:</b> من المهم التأكد من تقديم مستندات واضحة من بريدكم الإلكتروني المسجل، حتى نتمكن من معالجة التحديث الخاص بكم دون أي تأخير.<br><br>للمزيد من التوضيح أو الدعم المطلوب لإرسال المستندات المطلوبة، يرجى الاتصال بفريق دعم KYC الخاص بنا على XX-XXXXXXX من الساعة X صباحًا إلى الساعة X مساءً، مع ذكر رقم المرجع الخاص بكم: (CaseID). سيتواصل معكم ممثلونا أو يلتقون بكم شخصيًا في الوقت الذي يناسبكم لجمع المستندات.<br><br><u><b>تواصل معنا</b></u><br>
+                <b>للاستفسارات العامة أو الملاحظات:</b>
+            <ul style="list-style-position: inside; text-align: right;">
+                <li>اكتب لنا <a href='https://www.rakbank.ae/en/contact-us'><span style="color:red;">هنا</span></a>.</li>
+                <li>تحدث معنا على <a href='https://www.rakbank.ae/en'><span style="color:red;">www.rakbank.ae</span></a></li>
+            </ul>
+            <p>
+            <b>للشكاوى:</b><br>
+            يمكنك استخدام أي من القنوات أعلاه أو <a href='https://www.rakbank.ae/en/complaints'><span style="color:red;">اضغط هنا</span></a> لتسجيل شكواك مباشرة. نحن نسعى للرد على جميع رسائلكم الإلكترونية في غضون يوم عمل واحد (من الاثنين إلى الجمعة: من الساعة 8:00 صباحًا إلى الساعة 3:00 مساءً، باستثناء عطلات نهاية الأسبوع والعطلات الرسمية).
+            <br>
+            <br>
+            نؤكد لكم اهتمامنا الكامل في جميع الأوقات.
+            <br>
+            <br>
+            شريككم المصرفي،
+            <br>
+            <div style="color:red;"><b>راك بنك</b></div>
+            </p>
+            `);
+
+
+            modalHTML +=
+                '</td>' +
+                '</tr>' +
+                insertFooter() +
+                '</table>' +
+                '</div>';
+
+
+            modalHTML +=
+                '</div>' +
+
+                '</div>' +
+                '</div>' +
+                '<div class="modal-footer">' +
+                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+                '<button id="submitBtnEmail" type="button" class="btn btn-primary" onClick="handleSubmit()">Submit</button>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+
+
+            $('body').append(modalHTML);
+
+            $('#openModalBtn').click(function () {
+
+                $('#exampleModal').modal('show');
+            });
+
+
+            // input values population
+            var inputFields = document.querySelectorAll('.inputField');
+            var outputFields = document.querySelectorAll('.outputField');
+
+            for (var i = 0; i < inputFields.length; i++) {
+                inputFields[i].addEventListener('input', createInputHandler(i));
+            }
+
+            function createInputHandler(index) {
+                return function () {
+                    outputFields[index].value = inputFields[index].value;
+                };
+            }
+
+        });
+
+        function customStyledCard(height, str) {
+            var html =
+                '<div class="card" style="height:' + height + 'rem">' +
+                '<div class="card-body p-5">' +
+                str +
+                '</div>' +
+                '</div>';
+
+            return html;
+        }
+
+        function handleSubmit() {
+            console.log('submit clicked')
+        }
+
+        function insertFooter() {
+            
+            var rv = `
+            <tr>
+                    <td style="vertical-align:top;">
+                        <div style="text-align:center;">
+                            <table id="footerTbl" cellspacing="0" cellpadding="0" style="width:100%; margin-right:auto; margin-left:auto; border-collapse:collapse;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:420pt; padding:9.75pt 15pt; vertical-align:top; background-color:#fdf9f0;">
+                                            <div style="text-align:center;">
+                                                <table cellspacing="0" cellpadding="0" style="width:100%; margin-right:auto; margin-left:auto; border-collapse:collapse;">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="vertical-align:top;">
+                                                                <div style="text-align:right;">
+                                                                    <table cellspacing="0" cellpadding="0" style="width:93.75pt; margin-left:auto; border-collapse:collapse;">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td style="vertical-align:top;">
+                                                                                    <div style="text-align:right;">
+                                                                                        <table cellspacing="0" cellpadding="0" style="width:100%; margin-left:auto; border-collapse:collapse;">
+                                                                                            <tbody>
+                                                                                                <tr>
+                                                                                                    <td style="width:16.5pt; padding-right:7.5pt; vertical-align:top;">
+                                                                                                        <table cellspacing="0" cellpadding="0" style="width:24pt; border-collapse:collapse; float:right;">
+                                                                                                            <tbody>
+                                                                                                                <tr>
+                                                                                                                    <td style="vertical-align:top;">
+                                                                                                                        <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:12pt;"><a href="https://tracking.connect.rakbank.ae/tracking/1/click/W-2DZXPxuxjD_MQwEsULWrNFo9xBAPz-bqXP-dczZ9zGjy7CkAzQfgbLMv9YESaNwQn2v6qahpojGniQV6ge4W-0QwXPWT-yJ62-afJjgdQsrfVYIWP1x0pOCbfrMRUylcPNyMgD40C6x8murRE9p2a8fkK0HKh-YacbLY780ol6PjnU_1z0HxY4neXuxY9bo62LTB04Dwg8xB-KS0g7jlhSXO58dMxc9b-MtaRQUZDaycS1nll3ACIMF3oGge8sW168Ll0k-3D3cnyHqqW0KJhgcoL90PI9tUwfwlnzkaGAQhSdPsWFkUmQ2pTHPZoEP79jH5A_q97hRzGSASRbkBCUEWRcRGzjLJd8CyaSlPw8HT1ajD5v0Pyw-QObZazUCf1qsEgrTN3aFlQSFjaSSgv2Yaryg0Z9BAewcrx-DR8pVJ7DYZ97qYEZiEJE3ligLQ2e4vk3-erm1igLN6tDZ4a0oaVE6GL9BiB77-i7L7qWZxcEFYrCeuVDPQsQvlLB05vpH69_GYtRSaE53esJXvzPjGrAshyXGNlfwQt4A6GloI7OXkteqvxPKgRvgu95W4M7ye2QRNEuQEAHHsP2l9GikiM3jtRjquKRDgRT5oeHGj3ntbmI7jPVKLL-yvb9ftyqiEuNElciiC7AxV22DkFZ89Fc2Ahnc7zfH_YdUum9BWcKrBAejsrWQGRSuHJPrAnC6iYeyOrClzDngsFFXLWtmhXPkNYgIA6n1ORpupdIvt5I7fJiOyqGdSOIaS6PIxBxpDEz0htzaMQcGvTSuXA5aDHmMcv6i-ekv8kn_2g=" target="_blank" title="Facebook" style="text-decoration:none;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAIuSURBVFhHtZe/T8JAFMerRAcZFJwd3GQxBBYYWFwd2FgdXBncCDNh8g9AEiYnNwcTJoObriSii4MDiYs/EnAijT2/71JKe7zS6zV8k8/S9/rel/Z697AMtAcuwCP4BL/gBVyCHFiLjsEtEJq8gyrYBIm0D54A10SHL3AKjHQOuKIm3IENoCVK7AGuUBJorWyDSK2j+ZwfsAVClfixF4tFMRqNxGQyEY7jCNu2xXQ6FePxeJ7zAFjRggsUi0MqlRLD4VCski//DCwpyWoXnU7HbRMu5Z6A6DtXE7RJp9Nui9VS7rsCnuJsMksUCgW3RVClUklks1mRyWQkyn0O8KQGY1Gv192WC9VqNTZX4QRYu74LRjQaDbftQvRUuFyFGyAPFi6oDWcgn8+zuQrPQJ5qXFCbBAa+gTxSuWAo1WpVtNttj8Fg4LZdqNfrBXJarRZXawbkHs0FQ+l2u24bffX7fa6WDeQwwQVDMTEQ8lVMgZxkuGAoJgYqlQpX6w1YR74LWpgYyOVyXK17IMUFtUnwFdDpK0UzHJeghaEB2oq9mZEGSC5JC0MDr8ATOaFNgUuMxNDA0nhG0yuXGImBgWvAiqZX7oaVxDTwAXYAK5qIY++MMQz8gUOwUvRuaHrlCrBoGqDmB0BLNDrT9KoWYdEwQI898pdzounVX4glwgAtuNB3rqsuoI0j0HgOZ6BcLtN3rvVPKI5ohqMxiiYZWid0ntvNZnPm9vUrj1iELOsfwnYcmICTv9EAAAAASUVORK5CYII=" width="32" height="32" alt="Facebook" style="border-style: none;"></a></p>
+                                                                                                                    </td>
+                                                                                                                </tr>
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><br></p>
+                                                                                                    </td>
+                                                                                                    <td style="width:16.5pt; padding-right:7.5pt; vertical-align:top;">
+                                                                                                        <table cellspacing="0" cellpadding="0" style="width:24pt; border-collapse:collapse; float:right;">
+                                                                                                            <tbody>
+                                                                                                                <tr>
+                                                                                                                    <td style="vertical-align:top;">
+                                                                                                                        <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:12pt;"><a href="https://tracking.connect.rakbank.ae/tracking/1/click/W-2DZXPxuxjD_MQwEsULWgQCz0pumYNbFeGwyao2-iVMTO851bf6aJ6bckVjkddaT1sgar1-hdUmAanXoRulhndePth-mQqfxn-UwK-LFr0tYO76VaRzSNXYlq1bRsQpJTf-m47kmz93ZdNMR1Ksz20TISPrSEoCqZdr0f_vFSjV50gV5hKY1GarVDR_gl4uIJqDxP_IHsi59xuqlSHLa3wSFrNXhBEHOe-VKSjm3wmVeOVnQSJK_PWJJgeHvZn23goHnNBuraL0JMzGt0oa3DXTGqh1QjkjDA0Str4PJjdVtedYLP0lwkNYkDXDKGr8I63vXHZcG7ZCMVg7n-PpgEwo3TXHhVpbahcFKc0o6dGNnaJkNZEDSI_GJZfZ1Sfr-A_X8EFn3HYaekq5MzGmC7K9Xu_1AHsh3Sv4DqGg-cgH8B60iPrS0V02vXXAPWW2fxXCe9VRbZAp2Qxql65rtcncV2UYoG_tjBZgw3ElLWYbOofSPgA4fnzSq6gF1Qgo3fSgdSumlvAgXV3R-muGAoXo_V2kKDd5HDz54vZY0TB0XF4fs5z2m5Xck1xRmyWIXUGGIVEO6yjxBSbtcc5vhtLR2JW0GXHEtUFgCSPS7dlZVUYbkMu1-JDhnnkQJb5Z1gZ7tPEkqzGaZY8GKAgJ3lDY5zQfkY4WjdDQCLCqsDXkiPsgv_B5y-keWmuEEa-x8GsQvMv1SzucfVklIpXdFMAK7pIeV-7RsxGSVfngNd882OZu11qxfqAGHkv0u_Y_3jNubMNTphsyMonRiGfOyEMPYxHQ3VNI-bKWvXmXFGg=" target="_blank" title="X" style="text-decoration:none;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALwSURBVFhHtZY9aFpRFMf9QBMakUxmsEOICE4hECrUKUFiCIF2bjfBoYu4tEtIl66ZxC4NgRAIGdPQiktxERrN1kIXm8lAHAShGkSTGE/POcTH+zg+nx/5ww/eued/733vfrx7bWPqAwI6TpFnyJPoJfIL0Xc6iCbyGrEjE8mLFBGpE6u8Q8bSZ0RqcBx+IyPpCyI1NAk9xJKeovM+/xBTTXPYB/EXEUULTmMOBoMgyW63a3wS+/v77JVyyFvEoBJiMBcKBchms7CysgKrq6twd3cHu7u7Bp+ara0t7tzr9Yr5RzSifS6ZuJGHhweYm5vjeHl5mRv3eDwGL+FwODhPLyHlVfxAFP1BJBMTiUS40X5cqVTg5uZG4yFoakjHx8eGnIBmV0gGDfl8HkqlkhLf39/D0dGREs/MzECtVoOzszOlzAIvEJaUNEDa3NzkZ7/fz3EgEOD44uKC14vab4GviO29qsCU9fV17rS/uPb29qDX68H19TV0Oh1wu92GOkOgqRcTA0mn0/wS/bharfIiVXtGRCw0hRbgzs4OPzudTn6h7e1tg88iYqEpCwsLPPT0o6J4Y2ODp4BeRu+1gFhoyuzsLH91t9tVOr28vORdoPdagG8yUkKE9nqz2YRMJgPlcpkXIpW7XC5otVoQj8cNdUyoIjaPqmAo9BNqNBr8vLi4yCMxPz/PcTgc5ljtH8I3hCUlDdB2o7lXlx0cHGh2QbvdhmKxqPGY8AlhNRDJoJBIJKBer/O/Xp+7urqCXC6nxLe3t0MPrEcUvUIkA5NMJnloQ6GQmKeDirS2tsbx0tISx0NOwy6iiG6vkgmi0SgPu8/nE/N9UqkUd9qPDw8PeTrUHh1ORCO6vWpM9AWkWCymKR/E+fk5+9U6OTmRvD8RUXR7lSpMkxbiRgaKzmmp4rR4jgwV3V6lypMykuj2KjUyDjTslr5crzeI1OAo0IIznXMrogvkqGuD9rlhq02qCELXKOkSSwfLd+QjYlE223925ARYgjbJbwAAAABJRU5ErkJggg==" width="32" height="32" alt="X" style="border-style: none;"></a></p>
+                                                                                                                    </td>
+                                                                                                                </tr>
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><br></p>
+                                                                                                    </td>
+                                                                                                    <td style="width:24pt; vertical-align:top;">
+                                                                                                        <table cellspacing="0" cellpadding="0" style="width:24pt; border-collapse:collapse; float:right;">
+                                                                                                            <tbody>
+                                                                                                                <tr>
+                                                                                                                    <td style="vertical-align:top;">
+                                                                                                                        <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:12pt;"><a href="https://tracking.connect.rakbank.ae/tracking/1/click/W-2DZXPxuxjD_MQwEsULWpYcSYE14-hQvbrySOz8TO78OloF_BSlk3awpQQqhuoEXHfw14WyRldZWq38KdidtiwKM1RcKvt3Rmbm2SVQwulpVFjrU5pFOVXTuNB51y8bDhUCmXVdZpxvavBLbb1QztqMc02s447I7lXcdF8ZW1JKj_5Y-SQouqInfksO90jllJky7qrTj29VPPIz8xeQwl1j3ukbWKJa-TJAIv-gk8yoP2sIxZzS1X0PVv_PqNr6ohLdf2RjbeTwcxrhB1ksC6y5A2IO0tDxIElj5xULY5G5bSleYnIccibsUmmCrt1tBwkVNbAQyC6CI5fhCzoexMPXh9LwoqefWkmoQF1IM51_DMJbehlHZKwnyDs8qYRnZwVyesTcT_8HmDBiZg3sxiqgnRUbaqiGDHB0srOPR6wstfDQmz-aHM5OA37ybr-8K1b7EA_osavIfToDRcrZ29yS6JBx9MW5UDLyK_R6w688Ohytxe_dW18Icul-x2XwvP2HBiN1xq_e1ft5DplJelZan9_-t3QQ6NEHSvIs4TPmV8wYkZQcynY07SOhACTQiARmuG3IuGqataOLWSBdbX-nTDUNwxDZSK1ev2fV9sV7ip0PaaoT4I1k_lgRXdJiJaLdktPewfpMS8nlNaZcItS3m-r75bsSQ9LTOPY7bKEiuajqLJcOeA3XoIntNkR7mXFwx-CNIH2k2R5oMhqRbdqbyciDpgEPhxcPIClCChTaNtF7CZqzN1lSFUZoFPjcQzsT4TcOs9v8aF7rWeosaaVJUi5K6v05a9HfuGV5xxI=" target="_blank" title="Instagram" style="text-decoration:none;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAP1SURBVFhHtZe9S1xdEIdXRcUURnlBG1OohREhiGgj2KSxCJLK1oj5A4xgpYJaibx+gBZGCAgKki5CKk0kYGFABJFgRFOICmlMLBLw60XnnWfYeznn7o3uruQHD9ydOR/3njPnzGwiC5Uor5R15UT5rewo/yq1yl/RE+WdImlyoDxXcpV76R/lsxI3STr8UJ4pWemlEjdoNrxXcpS0RMM3StxA94FYKVDuVMrkubm5UlFRIe3t7dLd3S19fX0yODgoQ0NDBs8DAwPS29srnZ2d0tDQIAUFBd4YSU6VfOWPSln2qakpOT8/l0x1c3Mj29vb9vKRMT8psSLgvMYMEgx2dHQku7u7srS0JDMzMzI5OSkTExMGz9PT07K4uChbW1tycHAgFxcX1heVlJR44yovlBR50c6Xo/39fSkuLnY7p83s7KyNsbe3Jzk5OVG/J8556KQxy86XZzo5fVdXV2V8fNx+X11d2UvU1dVF275WQnmXDAGHDg8P3Q4pMFlAYGtra7O+qLCwUJqamuy5o6PD66vcKKE8J9GO2POoLy8vT8bGxsL4CLSxsSFlZWUWdGtrazI6OmrtORFoZWUlZSzlqZJ46BgMjhoi4Fw7k+/s7JgPLS8vy/z8vFxfX9vvy8tLKSoq8vrU1taa7/j42LMneatYYvEc/f391olod+18OTo9PfUm4qtHRkbMR/S7faqrq81+dnbm2ZN8USyreQ4uFsTxcu3Bske/MoAjiNj3wFZZWWk2Vsltm+SnYinVc3C7Ic54YCPQEMvutnXp6uqyNnNzc6EteAHktk1yqdgd7TluewH23G3r0traam0WFhZC2x0v8J9ixYTniNuC4AVYypjr1SDSUU9PT2i7Ywt+KVbJeA4SC+J6de0cNUTAuXZoaWmxGAHXXlVVZX04Ia49yTcl8dgxGGQ1xN3u2jnnDIQIOPacZefLgwDlt9unpqbG7CcnJ549yUfF5DlIqYhJoj5OgJtoAvEC0cmhvr7e/Jubmyk+hexrooYLHcHtRVZz7S4cNaKdgHP3PEpjY6ONNTw8HPVxFYc1IwVk6KSYQNFLJRvW19dtrObm5qjvqxKKN+FSCBtQTCBSqmvPhPLychsD5efnR/0p5RnVa9iAoxaIlMqSszXc7VyvHC8Xop2AY89Z9uDLETHljq3MK7Gieg0blpaWWjFxH8VM/l15oMSKiti7GbmAKCbI5xw3shqJJciAiGeOJ0eNaCfg2POYZb9WKpVbxd5QvUY73xcmf6SkJUpnqte4gbKBZb/zy+NE9Ro3YCYQcH/c83Q1q3BxxE0QB20552n9E8pE1HCUUVQyxAn5nJRKViOxfFC4XtP8V5xI/A++3VYmGf+gzwAAAABJRU5ErkJggg==" width="32" height="32" alt="Instagram" style="border-style: none;"></a></p>
+                                                                                                                    </td>
+                                                                                                                </tr>
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:10pt;"><br></p>
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                    <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><br></p>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                                <p style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:10pt;"><br></p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><br></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><br></p>
+                    </td>
+                </tr>
+                `;
+
+                rv += `
+                    <tr>
+                    <td style="vertical-align:top;">
+                        <div style="text-align:center;">
+                            <table cellspacing="0" cellpadding="0" style="width:100%; margin-right:auto; margin-left:auto; border-collapse:collapse;">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:420pt; padding-right:15pt; padding-left:15pt; padding-bottom:15pt; vertical-align:top; background-color:#fdf9f0;">
+                                            <div style="text-align:center;">
+                                                <table cellspacing="0" cellpadding="0" style="width:100%; margin-right:auto; margin-left:auto; border-collapse:collapse;">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="padding-top:3.75pt; vertical-align:top;">
+                                                                <p style="margin-top:0pt; margin-bottom:0pt; line-height:90%; font-size:12pt;"><a href="mailto:reportphishing@rakbank.ae?subject=Report%20Phishing" target="_blank" style="text-decoration:none;"><span style="line-height:90%; font-family:Calibri; font-size:7.5pt; color:#666666;">RAKBANK will never ask for sensitive information like your Digital Banking User ID or Password, Account, Credit/Debit Card Number, CVV, PIN, OTP, answers to verify your identity etc. Please do not provide or share these details via emails/SMS or on calls received from individuals claiming to be from RAKBANK. Kindly report any suspicious activity immediately to reportphishing@rakbank.com and to our Phone Banking unit at 042130000</span></a></p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:12pt; vertical-align:top;"><span style="display:none;">&nbsp;</span></p>
+                                            <div style="text-align:center;">
+                                                <table cellspacing="0" cellpadding="0" style="width:100%; margin-right:auto; margin-left:auto; border-collapse:collapse;">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="padding-top:3.75pt; vertical-align:top;">
+                                                                <p dir="rtl" style="margin-top:0pt; margin-bottom:0pt; line-height:90%; font-size:12pt;"><a href="mailto:reportphishing@rakbank.ae?subject=Report%20Phishing" target="_blank" style="text-decoration:none;"><span style="line-height:90%; font-size:7.5pt; color:#666666;">لن يطلب راك بنك أبداً معلومات حساسة مثل معرّف المستخدم، أو كلمة المرور الخاصة بالخدمات المصرفية الرقمية أو الخاصة بالحساب، أو رقم بطاقة الائتمان / الخصم، أو رمز الأمان للبطاقة، أو رقم التعريف الشخصي، أو كلمة المرور لمرة واحدة، أو إجابات التحقق من هويتك، وما إلى ذلك، يُرجى عدم تقديم هذه التفاصيل أو مشاركتها عبر رسائل البريد الإلكتروني / الرسائل القصيرة أو عند تلقي مكالمة من أفراد يزعمون أنهم من راك بنك. يرجى الإبلاغ عن أي نشاط مشبوه على الفور إلى&nbsp;</span><span style="line-height:90%; font-size:7.5pt; color:#666666;" dir="ltr">reportphishing@rakbank.com</span><span style="line-height:90%; font-size:7.5pt; color:#666666;">&nbsp;وإلى وحدة الخدمات المصرفية عبر الهاتف على 042130000.</span><br></a><span style="font-family:Calibri; font-size:10.5pt;" dir="ltr">&nbsp;</span></p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:12pt; vertical-align:top;"><span style="display:none;">&nbsp;</span></p>
+                                            <div style="text-align:center;">
+                                                <table cellspacing="0" cellpadding="0" style="width:100%; margin-right:auto; margin-left:auto; border-collapse:collapse;">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="padding-top:3.75pt; vertical-align:top;">
+                                                                <p style="margin-top:0pt; margin-bottom:0pt; font-size:7.5pt;"><span style="font-family:Calibri; color:#666666;">The National Bank of Ras Al Khaimah (P.S.C) (the &ldquo;Bank&rdquo; or &ldquo;RAKBANK&rdquo;), is a commercial bank regulated and licensed by the Central Bank of the United Arab Emirates.</span></p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:12pt; vertical-align:top;"><span style="display:none;" dir="rtl">&nbsp;</span></p>
+                                            <div style="text-align:center;">
+                                                <table cellspacing="0" cellpadding="0" style="width:100%; margin-right:auto; margin-left:auto; border-collapse:collapse;">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="padding-top:3.75pt; vertical-align:top;">
+                                                                <p dir="rtl" style="margin-top:0pt; margin-bottom:0pt; font-size:7.5pt;"><span style="color:#666666;">بنك رأس الخيمة الوطني (ش.م.ع) (&quot;البنك&quot; أو &quot;راك بنك&quot;)، هو بنك تجاري منظم ومرخص من مصرف الإمارات العربية المتحدة المركزي.&nbsp;</span></p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><br></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:10pt;"><br></p>
+                    </td>
+                </tr>
+                `;
+
+            return rv;
+        }
+
+
+    </script>
+
+</body>
+<style>
+    a {
+        text-decoration: underline black;
+    }
+
+    #mainCont {
+        display: flex;
+        flex-direction: column;
+    }
+
+    body {
+        background-color: rgb(109, 111, 111);
+        padding: 400px;
+        font-family: 'Arial', sans-serif;
+    }
+
+    textarea {
+        resize: none;
+        border: none;
+        width: 100%;
+    }
+
+    .card {
+        overflow: auto;
+    }
+
+    /* Hide scrollbar for Chrome, Safari etc. */
+    textarea::-webkit-scrollbar,
+    .card::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .card {
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
+    }
+
+    /* First card */
+    .card:nth-child(1) {
+        border: none;
+        border-inline: 1px solid rgba(0, 0, 0, .125);
+        border-top: 1px solid rgba(0, 0, 0, .125);
+        border-radius: 0px;
+    }
+
+    /* Second card */
+    .card:nth-child(2) {
+        border: none;
+        border-inline: 1px solid rgba(0, 0, 0, .125);
+        border-radius: 0px;
+    }
+
+    /* Third card */
+    .card:nth-child(3) {
+        border: none;
+        border-inline: 1px solid rgba(0, 0, 0, .125);
+        border-bottom: 1px solid rgba(0, 0, 0, .125);
+        border-radius: 0px;
+    }
+
+    #textarea-arabic {
+        text-align: right;
+    }
+</style>
+
+</html>
