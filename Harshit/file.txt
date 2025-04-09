@@ -1,18 +1,22 @@
-public static LocalDateTime getNextBusinessDayAt8AM(LocalDateTime currentDate) {
-        // Get next day
-        LocalDate nextDay = currentDate.toLocalDate().plusDays(1);
-        
-        // Check if next day is Sunday
-        if (nextDay.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            // Skip to Monday
-            nextDay = nextDay.plusDays(1);
-        }
-        
-        // Set time to 8:00 AM
-        return LocalDateTime.of(nextDay, LocalTime.of(8, 0));
-    }
+// Check the format of your cacertsFile
+try {
+    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+    FileInputStream fis = new FileInputStream(cacertsFile);
+    ks.load(fis, SSL_password.toCharArray());
+    fis.close();
+    System.out.println("Successfully loaded keystore: " + cacertsFile);
+} catch (Exception e) {
+    System.err.println("Error loading keystore: " + e.getMessage());
+    e.printStackTrace();
+}
 
-LocalDateTime today = LocalDateTime.now();
-        LocalDateTime nextBusinessDay = getNextBusinessDayAt8AM(today);
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+// Only set the necessary SSL properties
+System.setProperty("javax.net.ssl.trustStore", cacertsFile);
+System.setProperty("javax.net.ssl.trustStorePassword", SSL_password);
+System.setProperty("javax.net.ssl.trustStoreType", KeyStore.getDefaultType());
+
+// If you need client authentication:
+System.setProperty("javax.net.ssl.keyStore", cacertsFile);
+System.setProperty("javax.net.ssl.keyStorePassword", SSL_password);
+System.setProperty("javax.net.ssl.keyStoreType", KeyStore.getDefaultType());
