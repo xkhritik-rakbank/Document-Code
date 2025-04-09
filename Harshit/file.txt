@@ -1,22 +1,40 @@
-// Check the format of your cacertsFile
+// Create a trust manager that doesn't validate certificate chains
+TrustManager[] trustAllCerts = new TrustManager[] {
+    new X509TrustManager() {
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+        
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            // No validation
+        }
+        
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            // No validation
+        }
+    }
+};
+
+// Install the all-trusting trust manager
 try {
-    KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-    FileInputStream fis = new FileInputStream(cacertsFile);
-    ks.load(fis, SSL_password.toCharArray());
-    fis.close();
-    System.out.println("Successfully loaded keystore: " + cacertsFile);
+    SSLContext sc = SSLContext.getInstance("TLS");
+    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    
+    // Create all-trusting host name verifier
+    HostnameVerifier allHostsValid = new HostnameVerifier() {
+        public boolean verify(String hostname, SSLSession session) {
+            return true;
+        }
+    };
+    
+    // Install the all-trusting host verifier
+    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+    
+    // Now proceed with your URL connection
+    URL url = new URL("https://your-api-endpoint.com");
+    HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+    // Rest of your connection code
 } catch (Exception e) {
-    System.err.println("Error loading keystore: " + e.getMessage());
     e.printStackTrace();
 }
-
-
-// Only set the necessary SSL properties
-System.setProperty("javax.net.ssl.trustStore", cacertsFile);
-System.setProperty("javax.net.ssl.trustStorePassword", SSL_password);
-System.setProperty("javax.net.ssl.trustStoreType", KeyStore.getDefaultType());
-
-// If you need client authentication:
-System.setProperty("javax.net.ssl.keyStore", cacertsFile);
-System.setProperty("javax.net.ssl.keyStorePassword", SSL_password);
-System.setProperty("javax.net.ssl.keyStoreType", KeyStore.getDefaultType());
