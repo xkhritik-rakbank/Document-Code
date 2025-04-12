@@ -1,18 +1,43 @@
-private static List<String> loadDocCleanupPathsFromProperties(String propertiesFilePath) {
-    List<String> paths = new ArrayList<>();
-    try (FileInputStream input = new FileInputStream(propertiesFilePath)) {
-        Properties prop = new Properties();
-        prop.load(input);
-        String dirs = prop.getProperty("doc_cleanup_paths");
-        if (dirs != null) {
-            for (String dir : dirs.split(",")) {
-                if (!dir.trim().isEmpty()) {
-                    paths.add(dir.trim());
-                }
-            }
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.io.RandomAccessFile;
+import java.nio.file.Paths;
+
+private static FileLock acquireLock() {
+    try {
+        String lockFilePath = "D:\\Custom_utility\\sLogSweep\\log_utility.lock";
+        File lockFile = new File(lockFilePath);
+
+        // Ensure the lock file exists
+        lockFile.createNewFile();
+
+        FileChannel channel = new RandomAccessFile(lockFile, "rw").getChannel();
+        FileLock lock = channel.tryLock();
+        if (lock == null) {
+            channel.close();
+            return null; // Already locked by another process
+        }
+        return lock; // Lock acquired
+    } catch (IOException e) {
+        System.err.println("Failed to acquire lock: " + e.getMessage());
+        return null;
+    }
+}
+
+
+FileLock lock = acquireLock();
+if (lock == null) {
+    System.err.println("Another instance is already running. Exiting...");
+    return;
+}
+
+Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+    try {
+        if (lock != null) {
+            lock.release();
+            System.out.println("Lock released.");
         }
     } catch (IOException e) {
-        System.err.println("Error reading properties file: " + e.getMessage());
+        System.err.println("Error releasing lock: " + e.getMessage());
     }
-    return paths;
-}
+}));
