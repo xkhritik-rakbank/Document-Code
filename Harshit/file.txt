@@ -1,48 +1,18 @@
-private static String loadDocCleanupPathFromProperties(String propertiesFilePath) {
+private static List<String> loadDocCleanupPathsFromProperties(String propertiesFilePath) {
+    List<String> paths = new ArrayList<>();
     try (FileInputStream input = new FileInputStream(propertiesFilePath)) {
         Properties prop = new Properties();
         prop.load(input);
-        return prop.getProperty("doc_cleanup_path");
-    } catch (IOException e) {
-        System.err.println("Error reading properties file: " + e.getMessage());
-        return null;
-    }
-}
-
-public static void deleteOldDocuments(String inputDirPath) {
-    File inputDir = new File(inputDirPath);
-    if (inputDir.exists() && inputDir.isDirectory()) {
-        deleteOldDocsRecursively(inputDir);
-    } else {
-        System.err.println("Invalid input directory: " + inputDirPath);
-    }
-}
-
-private static void deleteOldDocsRecursively(File dir) {
-    File[] files = dir.listFiles();
-    if (files == null) return;
-
-    for (File file : files) {
-        if (file.isDirectory()) {
-            deleteOldDocsRecursively(file);
-        } else if (isDocumentFile(file) && isOlderThan30Days(file)) {
-            if (file.delete()) {
-                System.out.println("Deleted old document: " + file.getAbsolutePath());
-            } else {
-                System.err.println("Failed to delete old document: " + file.getAbsolutePath());
+        String dirs = prop.getProperty("doc_cleanup_paths");
+        if (dirs != null) {
+            for (String dir : dirs.split(",")) {
+                if (!dir.trim().isEmpty()) {
+                    paths.add(dir.trim());
+                }
             }
         }
+    } catch (IOException e) {
+        System.err.println("Error reading properties file: " + e.getMessage());
     }
-}
-
-private static boolean isDocumentFile(File file) {
-    String name = file.getName().toLowerCase();
-    return name.endsWith(".pdf") || name.endsWith(".png") || name.endsWith(".jpg") ||
-           name.endsWith(".jpeg") || name.endsWith(".doc") || name.endsWith(".docx") ||
-           name.endsWith(".xls") || name.endsWith(".xlsx") || name.endsWith(".txt");
-}
-
-private static boolean isOlderThan30Days(File file) {
-    long cutoff = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000);
-    return file.lastModified() < cutoff;
+    return paths;
 }
